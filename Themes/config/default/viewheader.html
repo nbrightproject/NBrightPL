@@ -1,1 +1,33 @@
-hhhhhhhhhhhhhhhhhhh
+<script type="text/javascript" src="/DesktopModules/NBright/NBrightBuy/Themes/config/js/nbbajax.js"></script>
+<script type="text/javascript" src="/DesktopModules/NBright/NBrightBuy/Themes/config/js/jquery.genxmlajax.js"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('.tabclass').click(function () {
+            alert($(this).attr('tabid'));
+        });
+
+        nbxget('tablanguagefields', '#selectparams', '#tablanguagefields');
+
+
+    });
+
+</script>
+
+[<tag id="localizedfields" type="postback" value="genxml/textbox/pagename,genxml/textbox/pagetitle,genxml/textbox/tagwords,genxml/textbox/pagedescription," />]
+
+<div id="selectparams">
+            [<tag id="itemid" type="hidden" databind="ItemId" />]
+            [<tag id="lang" type="editculture" />]
+</div>
+
+
+<div class="treetabdiv">
+[<tag type="treetabli" cssclass="tabclass" />]    
+</div>
+
+<div id="tablanguagefields">
+</div>

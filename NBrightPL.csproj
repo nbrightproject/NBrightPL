@@ -30,10 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DotNetNuke">
-      <HintPath>..\..\..\..\..\..\Support\DNN6x\bin610\DotNetNuke.dll</HintPath>
+    <Reference Include="DotNetNuke, Version=6.1.0.1171, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Support\DNN6x\bin\DotNetNuke.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +48,9 @@
     <Compile Include="Base\NBrightPLBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="common\LocalUtils.cs" />
+    <Compile Include="common\TabData.cs" />
+    <Compile Include="render\GenXmlTemplateExt.cs" />
     <Compile Include="View.ascx.cs">
       <DependentUpon>View.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -54,114 +59,23 @@
       <DependentUpon>View.ascx.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlConnector.ashx.cs">
+      <DependentUpon>XmlConnector.ashx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="App_LocalResources\ProductView.ascx.resx" />
+    <EmbeddedResource Include="App_LocalResources\View.ascx.resx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Themes\config\default\viewbody.html" />
     <Content Include="Themes\config\default\viewfooter.html" />
     <Content Include="Themes\config\default\viewheader.html" />
+    <Content Include="Themes\config\js\nbrightplajax.js" />
     <Content Include="View.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Themes\config\css\fullcalendar.min.css" />
     <Content Include="Themes\config\css\fullcalendar.print.css" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\changelog.txt" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\agenda-views.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\background-events.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\basic-views.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\default.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\external-dragging.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\gcal.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\json.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\languages.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\selectable.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\theme.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\timezones.html" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\fullcalendar.css" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\fullcalendar.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\fullcalendar.min.css" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\fullcalendar.min.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\fullcalendar.print.css" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\gcal.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang-all.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ar-ma.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ar-sa.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ar-tn.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ar.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\bg.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ca.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\cs.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\da.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\de-at.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\de.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\el.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\en-au.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\en-ca.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\en-gb.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\es.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\fa.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\fi.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\fr-ca.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\fr.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\he.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\hi.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\hr.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\hu.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\id.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\is.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\it.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ja.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ko.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\lt.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\lv.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\nl.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\pl.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\pt-br.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\pt.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ro.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\ru.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\sk.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\sl.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\sr-cyrl.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\sr.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\sv.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\th.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\tr.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\uk.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\vi.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\zh-cn.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lang\zh-tw.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\animated-overlay.gif" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_diagonals-thick_90_eeeeee_40x40.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_flat_15_cd0a0a_40x100.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_glass_100_e4f1fb_1x400.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_glass_50_3baae3_1x400.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_glass_80_d7ebf9_1x400.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_highlight-hard_100_f2f5f7_1x100.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_highlight-hard_70_000000_1x100.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_highlight-soft_100_deedf7_1x100.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-bg_highlight-soft_25_ffef8f_1x100.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-icons_2694e8_256x240.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-icons_3d80b3_256x240.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-icons_72a7cf_256x240.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\cupertino\jquery-ui.min.css" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\jquery-ui.custom.min.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\jquery.min.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\lib\moment.min.js" />
-    <Content Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\license.txt" />
-    <Content Include="Themes\config\js\fullcalendar.min.js" />
-    <Content Include="Themes\config\js\jquery.simpletip-1.3.1.min.js" />
-    <Content Include="Themes\config\js\moment.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\json\events.json" />
-    <None Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\php\get-events.php" />
-    <None Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\php\get-timezones.php" />
-    <None Include="Themes\config\js\fullcalendar-2.2.6\fullcalendar-2.2.6\demos\php\utils.php" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Installation\" />
@@ -175,6 +89,9 @@
       <Project>{ec815d38-62cf-4b46-8177-cf40ce1aab62}</Project>
       <Name>NBrightDNN</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="XmlConnector.ashx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

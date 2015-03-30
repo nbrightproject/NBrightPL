@@ -118,23 +118,6 @@ namespace Nevoweb.DNN.NBrightPL
                     l.Add(nbiT);                    
                 }
 
-                var nbi = ModCtrl.GetByGuidKey(PortalId, ModuleId, "NBRIGHTPL", "NBRIGHTPLTABDATA");
-                if (nbi != null)
-                {
-                    l.Add(nbi);
-                    rpData.DataSource = l;
-                    rpData.DataBind();
-                }
-                else
-                {
-                    nbi = new NBrightInfo(true);
-                    nbi.GUIDKey = "NBRIGHTPLTABDATA";
-                    nbi.ModuleId = ModuleId;
-                    nbi.PortalId = PortalId;
-                    nbi.TypeCode = "NBRIGHTPL";
-                    nbi.SetXmlProperty("genxml/testing","TEST");
-                    ModCtrl.Update(nbi);
-                }
 
             }
 

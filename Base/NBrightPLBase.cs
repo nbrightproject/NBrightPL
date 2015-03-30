@@ -25,6 +25,10 @@ namespace Nevoweb.DNN.NBrightPL.Base
 
             ModCtrl = new NBrightDataController();
 
+            //add template provider to NBright Templating
+            NBrightCore.providers.GenXProviderManager.AddProvider("NBrightPL,NBrightPL.render.GenXmlTemplateExt");
+
+
 		    base.OnInit(e);
            
           
