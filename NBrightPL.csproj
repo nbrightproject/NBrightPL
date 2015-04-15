@@ -67,6 +67,11 @@
     <EmbeddedResource Include="App_LocalResources\View.ascx.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Skins\NBrightPL\NBrightPL.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Skins\NBrightPL\NBrightPL.doctype.xml" />
+    <Content Include="Themes\config\default\viewbodybase.html" />
     <Content Include="Themes\config\default\viewbody.html" />
     <Content Include="Themes\config\default\viewfooter.html" />
     <Content Include="Themes\config\default\viewheader.html" />

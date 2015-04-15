@@ -16,9 +16,9 @@ namespace NBrightPL.common
 {
     public class TabData
     {
-        public NBrightInfo Info;
         public NBrightInfo DataRecord;
         public NBrightInfo DataLangRecord;
+        public NBrightInfo Info;
         public TabInfo TabInfo;
         private String _lang = ""; // needed for webservice
         private int _portalId; 
@@ -52,18 +52,6 @@ namespace NBrightPL.common
         /// </summary>
         public bool Exists { get; private set; }
 
-        public int ParentItemId
-        {
-            get
-            {
-                return DataRecord.ParentItemId;
-            }
-            set
-            {
-                DataRecord.ParentItemId = value;
-            }
-        }
-
 
         public String PageName
         {
@@ -71,7 +59,7 @@ namespace NBrightPL.common
             {
                 if (Exists)
                 {
-                    return Info.GetXmlProperty("genxml/lang/genxml/textbox/pagename");
+                    return DataLangRecord.GetXmlProperty("genxml/textbox/pagename");
                 }
                 return "";
             }
@@ -83,7 +71,7 @@ namespace NBrightPL.common
             {
                 if (Exists)
                 {
-                    return Info.GetXmlProperty("genxml/lang/genxml/textbox/pagetitle");
+                    return DataLangRecord.GetXmlProperty("genxml/textbox/pagetitle");
                 }
                 return "";
             }
@@ -95,7 +83,7 @@ namespace NBrightPL.common
             {
                 if (Exists)
                 {
-                    return Info.GetXmlProperty("genxml/lang/genxml/textbox/tagwords");
+                    return DataLangRecord.GetXmlProperty("genxml/textbox/tagwords");
                 }
                 return "";
             }
@@ -107,7 +95,7 @@ namespace NBrightPL.common
             {
                 if (Exists)
                 {
-                    return Info.GetXmlProperty("genxml/lang/genxml/textbox/pagedescription");
+                    return DataLangRecord.GetXmlProperty("genxml/textbox/pagedescription");
                 }
                 return "";
             }
@@ -118,7 +106,8 @@ namespace NBrightPL.common
         {
             get
             {
-                return DataRecord.ItemID;
+                if (Utils.IsNumeric(DataRecord.GUIDKey)) return Convert.ToInt32(DataRecord.GUIDKey);
+                return -1;
             }
         }
 
@@ -129,23 +118,6 @@ namespace NBrightPL.common
             objCtrl.Update(DataLangRecord);            
         }
 
-        public void Update(NBrightInfo info)
-        {
-            var localfields = info.GetXmlProperty("genxml/hidden/localizedfields").Split(',');
-
-            foreach (var f in localfields)
-            {
-                DataLangRecord.SetXmlProperty(f, info.GetXmlProperty(f));
-                DataRecord.RemoveXmlNode(f);
-            }
-            var fields = info.GetXmlProperty("genxml/hidden/fields").Split(',');
-
-            foreach (var f in fields)
-            {
-                DataRecord.SetXmlProperty(f, info.GetXmlProperty(f));
-                DataLangRecord.RemoveXmlNode(f);                
-            }
-        }
 
         public void ResetLanguage(String resetToLang)
         {
@@ -168,7 +140,7 @@ namespace NBrightPL.common
             if (DataLangRecord == null)
             {
                 // we have no datalang record for this language, so get an existing one and save it.
-                var l = objCtrl.GetList(_portalId, -1, "PLLANG", " and NB1.ParentItemId = " + Info.ItemID.ToString(""));
+                var l = objCtrl.GetList(_portalId, -1, "PLLANG", " and NB1.ParentItemId = " + DataRecord.ItemID.ToString(""));
                 if (l.Count > 0)
                 {
                     DataLangRecord = (NBrightInfo)l[0].Clone();
@@ -179,12 +151,10 @@ namespace NBrightPL.common
                 }
             }
             
-            if (errorcount > 0) objCtrl.Update(DataRecord); // update if we find a error
-
             // fix langauge records
             foreach (var lang in DnnUtils.GetCultureCodeList(_portalId))
             {
-                var l = objCtrl.GetList(_portalId, -1, "PLLANG", " and NB1.ParentItemId = " + Info.ItemID.ToString("") + " and NB1.Lang = '" + lang + "'");
+                var l = objCtrl.GetList(_portalId, -1, "PLLANG", " and NB1.ParentItemId = " + DataRecord.ItemID.ToString("") + " and NB1.Lang = '" + lang + "'");
                 if (l.Count == 0 && DataLangRecord != null)
                 {
                     var nbi = (NBrightInfo)DataLangRecord.Clone();
@@ -196,7 +166,7 @@ namespace NBrightPL.common
                 if (l.Count > 1)
                 {
                     // we have more records than shoudl exists, remove any old ones.
-                    var l2 = objCtrl.GetList(_portalId, -1, "PLLANG", " and NB1.ParentItemId = " + Info.ItemID.ToString("") + " and NB1.Lang = '" + lang + "'", "order by Modifieddate desc");
+                    var l2 = objCtrl.GetList(_portalId, -1, "PLLANG", " and NB1.ParentItemId = " + DataRecord.ItemID.ToString("") + " and NB1.Lang = '" + lang + "'", "order by Modifieddate desc");
                     var lp = 1;
                     foreach (var i in l2)
                     {
@@ -217,60 +187,66 @@ namespace NBrightPL.common
 
         private void LoadData(int tabId)
         {
-            _portalId = PortalSettings.Current.PortalId;
-            var objTabCtrl = new DotNetNuke.Entities.Tabs.TabController();
-            TabInfo = objTabCtrl.GetTab(tabId, _portalId, true);
-
             Exists = false;
-            if (tabId == -1) tabId = AddNew(); // add new record if -1 is used as id.
-            var objCtrl = new NBrightDataController();
-            if (_lang == "") _lang = Utils.GetCurrentCulture();
-            var nbi = objCtrl.GetByGuidKey(_portalId,-1,"PL",tabId.ToString(""));
-            if (nbi != null)
+            if (_lang != "")
             {
-                Exists = true;
-                _portalId = Info.PortalId;
-                DataRecord = objCtrl.GetData(nbi.ItemID);
-                DataRecord.SetXmlProperty("genxml/textbox/pagename", TabInfo.TabName);
-                DataRecord.SetXmlProperty("genxml/textbox/pagetitle", TabInfo.Title);
-                DataRecord.SetXmlProperty("genxml/textbox/tagwords", TabInfo.KeyWords);
-                DataRecord.SetXmlProperty("genxml/textbox/pagedescription", TabInfo.Description);
-                Info = objCtrl.Get(nbi.ItemID, _lang);
-                if (DataLangRecord == null) // rebuild langauge if we have a missing lang record
+                _portalId = PortalSettings.Current.PortalId;
+                var objTabCtrl = new DotNetNuke.Entities.Tabs.TabController();
+                TabInfo = objTabCtrl.GetTab(tabId, _portalId, true);
+                if (TabInfo != null)
                 {
-                    Validate();
-                    DataLangRecord = objCtrl.GetData(nbi.ItemID, _lang);
-                }
-                Info = (NBrightInfo)DataRecord.Clone();
-                Info.AddSingleNode("lang","","genxml");
-                Info.AddXmlNode("<lang>" + DataLangRecord.XMLData + "</lang>","lang","genxml");
+                    var objCtrl = new NBrightDataController();
+                    DataRecord = objCtrl.GetByGuidKey(_portalId, -1, "PL", tabId.ToString(""));
+                    if (DataRecord == null) DataRecord = AddNew(); // add new record.
+                    if (_lang == "") _lang = Utils.GetCurrentCulture();
+                    if (DataRecord != null)
+                    {
+                        Exists = true;
+                        DataRecord.GUIDKey = TabInfo.TabID.ToString("");
+                        DataLangRecord = objCtrl.GetDataLang(DataRecord.ItemID, _lang);
+                        if (DataLangRecord == null) // rebuild langauge if we have a missing lang record
+                        {
+                            Validate();
+                            DataLangRecord = objCtrl.GetDataLang(DataRecord.ItemID, _lang);
+                            DataLangRecord.GUIDKey = TabInfo.TabID.ToString("");
+                        }
+                        Info = objCtrl.Get(DataRecord.ItemID, _lang);
+                        Save();
+                    }
+                }                
             }
         }
 
-        private int AddNew()
+        private NBrightInfo AddNew()
         {
+            var objCtrl = new NBrightDataController();
             var nbi = new NBrightInfo(true);
             nbi.PortalId = _portalId;
             nbi.TypeCode = "PL";
             nbi.ModuleId = -1;
             nbi.ItemID = -1;
             nbi.GUIDKey = TabInfo.TabID.ToString("");
-            var objCtrl = new NBrightDataController();
             var itemId = objCtrl.Update(nbi);
+            nbi.ItemID = itemId;
 
             foreach (var lang in DnnUtils.GetCultureCodeList(_portalId))
             {
-                nbi = new NBrightInfo(true);
-                nbi.PortalId = _portalId;
-                nbi.TypeCode = "PLLANG";
-                nbi.ModuleId = -1;
-                nbi.ItemID = -1;
-                nbi.Lang = lang;
-                nbi.ParentItemId = itemId;
-                objCtrl.Update(nbi);
+                var nbi2 = new NBrightInfo(true);
+                nbi2.PortalId = _portalId;
+                nbi2.TypeCode = "PLLANG";
+                nbi2.ModuleId = -1;
+                nbi2.ItemID = -1;
+                nbi2.Lang = lang;
+                nbi2.ParentItemId = itemId;
+                nbi2.GUIDKey = TabInfo.TabID.ToString("");
+                nbi2.SetXmlProperty("genxml/textbox/pagename", TabInfo.TabName);
+                nbi2.SetXmlProperty("genxml/textbox/pagetitle", TabInfo.Title);
+                nbi2.SetXmlProperty("genxml/textbox/tagwords", TabInfo.KeyWords);
+                nbi2.SetXmlProperty("genxml/textbox/pagedescription", TabInfo.Description);
+                nbi2.ItemID = objCtrl.Update(nbi2);
             }
 
-            return itemId;
+            return nbi;
         }
 
 

@@ -1,1 +1,1 @@
-﻿<%@ WebHandler Language="C#" CodeBehind="XmlConnector.ashx.cs" Class="Nevoweb.DNN.NBrightBuy.XmlConnector" %>
+﻿<%@ WebHandler Language="C#" CodeBehind="XmlConnector.ashx.cs" Class="Nevoweb.DNN.NBrightPL.XmlConnector" %>

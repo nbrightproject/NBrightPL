@@ -143,15 +143,7 @@ namespace Nevoweb.DNN.NBrightPL
         #endregion
 
 
-        private String GetTemplateData(String templatename)
-        {
-            var controlMapPath = HttpContext.Current.Server.MapPath("/DesktopModules/NBright/NBrightPL");
-            var templCtrl = new NBrightCore.TemplateEngine.TemplateGetter(PortalSettings.Current.HomeDirectoryMapPath, controlMapPath, "Themes\\config", "");
-            var templ = templCtrl.GetTemplateData(templatename, Utils.GetCurrentCulture());
-            //templ = Utils.ReplaceSettingTokens(templ, Settings );
-            templ = Utils.ReplaceUrlTokens(templ);
-            return templ;
-        }
+
 
     }
 

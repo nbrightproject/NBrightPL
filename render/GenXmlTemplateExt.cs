@@ -4,12 +4,17 @@ using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Services.Installer.Writers;
+using DotNetNuke.Services.Localization;
 using NBrightCore;
 using NBrightCore.common;
 using NBrightCore.providers;
 using NBrightCore.render;
 using DotNetNuke.Entities.Users;
+using NBrightDNN;
 using NBrightPL.common;
+using Nevoweb.DNN.NBrightPL;
 
 namespace NBrightPL.render
 {
@@ -40,6 +45,12 @@ namespace NBrightPL.render
             {
                 case "treetabli":
                     CreateTreeLi(container, xmlNod);
+                    return true;
+                case "editcultureselect":
+                    CreateEditCultureSelect(container, xmlNod,"editlanguage");
+                    return true;
+                case "basecultureselect":
+                    CreateEditCultureSelect(container, xmlNod, "baselanguage");
                     return true;
                 default:
                     return false;
@@ -93,7 +104,7 @@ namespace NBrightPL.render
         #region "Private support Methods"
         //These methods create the actual controls and databinding for the controls specified in the "CreateGenControl" method.
 
-        #region "Tree ul>li"
+        #region "Literal tokens"
 
         private void CreateTreeLi(Control container, XmlNode xmlNod)
         {
@@ -102,6 +113,25 @@ namespace NBrightPL.render
 
             var lc = new Literal();
             lc.Text = LocalUtils.GetTreeTabLi(cssclass);
+            lc.DataBinding += LiteralDataBinding;
+            container.Controls.Add(lc);
+        }
+
+
+        private void CreateEditCultureSelect(Control container, XmlNode xmlNod,String cssclass)
+        {
+            var enabledlanguages = LocaleController.Instance.GetLocales(PortalSettings.Current.PortalId);
+            var strOut = "<ul class='" + cssclass + "'>";
+            foreach (var l in enabledlanguages)
+            {
+                strOut += "<li>";
+                strOut += "<a href='javascript:void(0)' lang='" + l.Value.Code + "' class='select" + cssclass + "'><img src='/Images/Flags/" + l.Value.Code + ".gif' alt='" + l.Value.NativeName + "' /></a>";
+                strOut += "</li>";
+            }
+            strOut += "</ul>";
+
+            var lc = new Literal();
+            lc.Text = strOut;
             lc.DataBinding += LiteralDataBinding;
             container.Controls.Add(lc);
         }
@@ -120,7 +150,8 @@ namespace NBrightPL.render
         }
 
         #endregion
- 
+
+
         #endregion
     }
 }

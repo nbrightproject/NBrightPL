@@ -1,5 +1,5 @@
-<script type="text/javascript" src="/DesktopModules/NBright/NBrightBuy/Themes/config/js/nbbajax.js"></script>
-<script type="text/javascript" src="/DesktopModules/NBright/NBrightBuy/Themes/config/js/jquery.genxmlajax.js"></script>
+<script type="text/javascript" src="/DesktopModules/NBright/NBrightPL/Themes/config/js/nbrightplajax.js"></script>
+<script type="text/javascript" src="/DesktopModules/NBright/NBrightData/js/jquery.genxmlajax.js"></script>
 
 
 <script type="text/javascript">
@@ -7,27 +7,70 @@
     $(document).ready(function () {
 
         $('.tabclass').click(function () {
-            alert($(this).attr('tabid'));
+            $('input[[id*="_itemid_"]]').val($(this).attr('tabid'));
+            nbxget('getformdata', '#selectparams', '#tablanguagefields');
+            nbxget('getbasedata', '#selectparams', '#tabbaselanguagefields');
+            $('#editdiv').show();
         });
 
-        nbxget('tablanguagefields', '#selectparams', '#tablanguagefields');
+        $('#savetabdata').click(function () {
+            nbxget('saveformdata', '#tablanguagefields');
+            nbxget('getformdata', '#selectparams', '#tablanguagefields');
+        });
 
+        $('.selecteditlanguage').click(function () {
+            nbxget('saveformdata', '#tablanguagefields');
+            $('input[[id*="_selectlang_"]]').val($(this).attr('lang'));
+            nbxget('getformdata', '#selectparams', '#tablanguagefields');
+        });
+
+        $('.selectbaselanguage').click(function () {
+            $('input[[id*="_baselang_"]]').val($(this).attr('lang'));
+            nbxget('getbasedata', '#selectparams', '#tabbaselanguagefields');
+        });
+
+        
 
     });
 
+    $(document).on("nbxgetcompleted", nbxgetCompleted);
+
+    function nbxgetCompleted(e) {
+        e.preventDefault();
+    }
+
 </script>
 
-[<tag id="localizedfields" type="postback" value="genxml/textbox/pagename,genxml/textbox/pagetitle,genxml/textbox/tagwords,genxml/textbox/pagedescription," />]
 
 <div id="selectparams">
-            [<tag id="itemid" type="hidden" databind="ItemId" />]
-            [<tag id="lang" type="editculture" />]
+    [<tag id="itemid" type="hidden" value="" />]
+    [<tag id="baselang" type="hidden" value="" />]
+    [<tag id="selectlang" type="hidden" value="" />]
+    [<tag type="currentculture" />]
+        
 </div>
 
-
-<div class="treetabdiv">
+<div class="treetabdiv" style="float:left;">
 [<tag type="treetabli" cssclass="tabclass" />]    
 </div>
+<div id="editdiv" style="display:none;float:left;">
+    
+    <div id="basediv" style="float:left;">
+          
+    BASE: <div id="baselangaugediv">[<tag id="baselanguage" type="basecultureselect" />]</div>
+    <hr/>
+    <div id="tabbaselanguagefields">
+    </div>
+        
+    </div>
+ 
+    <div id="editdiv" style="float:left;">
+        EDIT: <div id="editlangaugediv">[<tag id="editlangauge" type="editcultureselect" />]</div>
+    <div id="savetabdata">SAVE</div>
 
-<div id="tablanguagefields">
+    <hr/>
+    <div id="tablanguagefields">
+    </div>
+    </div>
+
 </div>

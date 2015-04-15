@@ -1,17 +1,24 @@
-<div class="language tabid[<tag type='valueof' databind='itemid' />]" style="display:none;">
-    [<tag type='valueof' databind='itemid' />]
-    [<tag type='valueof' databind='lang' />]
+<div class="language">
+    [<tag id="tabid" type="hidden" databind="guidkey"  value="" />]
+    [<tag id="lang" type="hidden" databind="lang" value="" />]
+
+    [<tag type='valueof' databind="itemid" value="" />]
+    
+    TabId: [<tag type='valueof' databind="guidkey" value="" />]
+    
+    <img src='/Images/Flags/[<tag type='valueof' databind="lang" value="" />].gif' width='16px' />
+
     <div>
-    Page Name:[<tag id="pagename" type="textbox" width="300" maxlength="250" />] 
+        Page Name:<br/>[<tag id="pagename" update="lang" type="textbox" width="300" maxlength="250" />] 
     </div>
     <div>
-    Page Title:[<tag id="pagetitle" type="textbox" width="300" maxlength="250" />]  
+        Page Title:<br/>[<tag id="pagetitle" update="lang" type="textbox" width="300" maxlength="250" />]  
     </div>
     <div>
-    Page TagWords:[<tag id="tagwords" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
+        Page TagWords:<br/>[<tag id="tagwords" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
     </div>
     <div>
-        Page Description:[<tag id="pagedescription" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
+        Page Description:<br/>[<tag id="pagedescription" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
     </div>
     
 </div>

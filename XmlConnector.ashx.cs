@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Web;
+using System.Xml;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
 using NBrightCore.common;
 using NBrightCore.render;
 using NBrightDNN;
+using NBrightPL.common;
 using DataProvider = DotNetNuke.Data.DataProvider;
 
 namespace Nevoweb.DNN.NBrightPL
@@ -36,8 +38,6 @@ namespace Nevoweb.DNN.NBrightPL
             //  so use the lang/lanaguge param to set it.
             if (lang == "") lang = language;
             if (!string.IsNullOrEmpty(lang)) _lang = lang;
-            // default to current thread if we have no language.
-            if (_lang == "") _lang = System.Threading.Thread.CurrentThread.CurrentCulture.ToString();
 
             #endregion
 
@@ -45,7 +45,7 @@ namespace Nevoweb.DNN.NBrightPL
 
             #region "Do processing of command"
 
-            var objCtrl = new NBrightPLController();
+            var objCtrl = new NBrightDataController();
 
             strOut = "ERROR!! - No Security rights for current user!";
             switch (paramCmd)
@@ -53,8 +53,14 @@ namespace Nevoweb.DNN.NBrightPL
                 case "test":
                     strOut = "<root>" + UserController.GetCurrentUserInfo().Username + "</root>";
                     break;
-                case "getproductlist":
-                    strOut = GetProductList(context);
+                case "getformdata":
+                    strOut = GetTabData(context, "viewbody.html");
+                    break;
+                case "getbasedata":
+                    strOut = GetTabData(context, "viewbodybase.html");
+                    break;
+                case "saveformdata":
+                    if (CheckRights()) strOut = SaveTabData(context);
                     break;
             }
 
@@ -81,44 +87,33 @@ namespace Nevoweb.DNN.NBrightPL
         }
 
 
-        #region "Product Methods"
+        #region "Methods"
 
-        private String GetProductList(HttpContext context)
+
+        private String GetTabData(HttpContext context, String templateName)
         {
             try
             {
-
-                var settings = GetAjaxFields(context);
-
-                return GetProductListData(settings);
-
-            }
-            catch (Exception ex)
-            {
-                return ex.ToString();
-            }
-
-
-        }
-
-        private String GetProductGeneralData(HttpContext context)
-        {
-            try
-            {
+                var strOut = "";
                 //get uploaded params
-                var settings = GetAjaxFields(context);
-                if (!settings.ContainsKey("itemid")) settings.Add("itemid", "");
-                var productitemid = settings["itemid"];
-                
-                // get template
-                var themeFolder = StoreSettings.Current.ThemeFolder;
-                if (settings.ContainsKey("themefolder")) themeFolder = settings["themefolder"];
-                var templCtrl = NBrightBuyUtils.GetTemplateGetter(themeFolder);
-                var bodyTempl = templCtrl.GetTemplateData("productadmingeneral.html", _lang, true, true, true, StoreSettings.Current.Settings());
+                var ajaxInfo = GetAjaxFields(context);
+                var tabid = ajaxInfo.GetXmlProperty("genxml/hidden/itemid");
+                var selectlang = ajaxInfo.GetXmlProperty("genxml/hidden/selectlang");
+                var lang = ajaxInfo.GetXmlProperty("genxml/hidden/lang");
+                var baselang = ajaxInfo.GetXmlProperty("genxml/hidden/baselang");
 
-                //get data
-                var prodData = ProductUtils.GetProductData(productitemid, _lang);
-                var strOut = GenXmlFunctions.RenderRepeater(prodData.Info, bodyTempl);
+                if (Utils.IsNumeric(tabid))
+                {
+                    if (templateName == "viewbodybase.html") selectlang = baselang;
+                    if (selectlang == "") selectlang = lang; // use current culture 
+
+                    // get template
+                    var bodyTempl = GetTemplateData(templateName, lang);
+
+                    //get data
+                    var tabData = new TabData(tabid, selectlang);
+                    strOut = GenXmlFunctions.RenderRepeater(tabData.Info, bodyTempl);                    
+                }
 
                 return strOut;
 
@@ -129,106 +124,97 @@ namespace Nevoweb.DNN.NBrightPL
             }
             
         }
-        
+
+        private String SaveTabData(HttpContext context)
+        {
+            try
+            {
+                //get uploaded params
+                var ajaxInfo = GetAjaxFields(context);
+                var tabid = ajaxInfo.GetXmlProperty("genxml/hidden/tabid");
+                var selectlang = ajaxInfo.GetXmlProperty("genxml/hidden/selectlang");
+
+                if (Utils.IsNumeric(tabid))
+                {
+                    var lang = ajaxInfo.GetXmlProperty("genxml/hidden/lang");
+                    if (selectlang == "") selectlang = lang;
+                    var tabData = new TabData(tabid, selectlang);
+
+                    //save data
+                    if (tabData.Exists)
+                    {
+                        var nodList2 = ajaxInfo.XMLDoc.SelectNodes("genxml/*");
+                        if (nodList2 != null)
+                        {
+                            foreach (XmlNode nod1 in nodList2)
+                            {
+                                var nodList = ajaxInfo.XMLDoc.SelectNodes("genxml/" + nod1.Name.ToLower() + "/*");
+                                if (nodList != null)
+                                {
+                                    foreach (XmlNode nod in nodList)
+                                    {
+                                        if (nod.Attributes != null && nod.Attributes["update"] != null)
+                                        {
+                                            if (nod1.Name.ToLower() == "checkboxlist")
+                                            {
+                                                if (nod.Attributes["update"].InnerText.ToLower() == "save")
+                                                {
+                                                    tabData.DataRecord.RemoveXmlNode("genxml/checkboxlist/" + nod.Name.ToLower());
+                                                    tabData.DataRecord.AddXmlNode(nod.OuterXml, nod.Name.ToLower(), "genxml/checkboxlist");
+                                                }
+                                                if (nod.Attributes["update"].InnerText.ToLower() == "lang")
+                                                {
+                                                    tabData.DataLangRecord.RemoveXmlNode("genxml/checkboxlist/" + nod.Name.ToLower());
+                                                    tabData.DataLangRecord.AddXmlNode(nod.OuterXml, nod.Name.ToLower(), "genxml/checkboxlist");
+                                                }                                                                                                
+                                            }
+                                            else
+                                            {
+                                                if (nod.Attributes["update"].InnerText.ToLower() == "save")
+                                                {
+                                                    tabData.DataRecord.SetXmlProperty("genxml/" + nod1.Name.ToLower() + "/" + nod.Name.ToLower(),nod.InnerText);
+                                                }
+                                                if (nod.Attributes["update"].InnerText.ToLower() == "lang")
+                                                {
+                                                    tabData.DataLangRecord.SetXmlProperty("genxml/" + nod1.Name.ToLower() + "/" + nod.Name.ToLower(),nod.InnerText);
+                                                }                                                
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }                            
+                        }
+                        tabData.Save();                        
+                    }
+                }
+
+                return "";
+
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+
+        }
+
+
         #endregion
 
 
         #region "functions"
 
-        private String GetProductListData(Dictionary<String, String> settings,bool paging = true)
+        private String GetTemplateData(String templatename,String lang)
         {
-            var strOut = "";
-
-            if (!settings.ContainsKey("header")) settings.Add("header", "");
-            if (!settings.ContainsKey("body")) settings.Add("body", "");
-            if (!settings.ContainsKey("footer")) settings.Add("footer", "");
-            if (!settings.ContainsKey("filter")) settings.Add("filter", "");
-            if (!settings.ContainsKey("orderby")) settings.Add("orderby", "");
-            if (!settings.ContainsKey("returnlimit")) settings.Add("returnlimit", "0");
-            if (!settings.ContainsKey("pagenumber")) settings.Add("pagenumber", "0");
-            if (!settings.ContainsKey("pagesize")) settings.Add("pagesize", "0");
-            if (!settings.ContainsKey("searchtext")) settings.Add("searchtext", "");
-            if (!settings.ContainsKey("searchcategory")) settings.Add("searchcategory", "");
-            if (!settings.ContainsKey("cascade")) settings.Add("cascade", "False");
-
-            var header = settings["header"];
-            var body = settings["body"];
-            var footer = settings["footer"];
-            var filter = settings["filter"];
-            var orderby = settings["orderby"];
-            var returnLimit = Convert.ToInt32(settings["returnlimit"]);    
-            var pageNumber = Convert.ToInt32(settings["pagenumber"]);            
-            var pageSize = Convert.ToInt32(settings["pagesize"]);
-            var cascade = Convert.ToBoolean(settings["cascade"]);
-
-            var searchText = settings["searchtext"];
-            var searchCategory = settings["searchcategory"];
-
-            if (searchText != "") filter += " and (NB3.[ProductName] like '%" + searchText + "%' or NB3.[ProductRef] like '%" + searchText + "%' or NB3.[Summary] like '%" + searchText + "%' ) ";
-
-            if (Utils.IsNumeric(searchCategory))
-            {
-                if (orderby == "{bycategoryproduct}") orderby += searchCategory;
-                var objQual = DataProvider.Instance().ObjectQualifier;
-                var dbOwner = DataProvider.Instance().DatabaseOwner;
-                if (!cascade)
-                    filter += " and NB1.[ItemId] in (select parentitemid from " + dbOwner + "[" + objQual + "NBrightBuy] where typecode = 'CATXREF' and XrefItemId = " + searchCategory + ") ";
-                else
-                    filter += " and NB1.[ItemId] in (select parentitemid from " + dbOwner + "[" + objQual + "NBrightBuy] where (typecode = 'CATXREF' and XrefItemId = " + searchCategory + ") or (typecode = 'CATCASCADE' and XrefItemId = " + searchCategory + ")) ";
-            }
-            else
-            {
-                if (orderby == "{bycategoryproduct}") orderby = " order by NB3.productname ";                
-            }
-
-            var recordCount = 0;
-
-            var themeFolder = StoreSettings.Current.ThemeFolder;
-            if (settings.ContainsKey("themefolder")) themeFolder = settings["themefolder"];
-            var templCtrl = NBrightBuyUtils.GetTemplateGetter(themeFolder);
-
-            if (!settings.ContainsKey("portalid")) settings.Add("portalid", PortalSettings.Current.PortalId.ToString("")); // aways make sure we have portalid in settings
-
-            var objCtrl = new NBrightBuyController();
-
-            var headerTempl = templCtrl.GetTemplateData(header, _lang, true, true, true, StoreSettings.Current.Settings());
-            var bodyTempl = templCtrl.GetTemplateData(body, _lang, true, true, true, StoreSettings.Current.Settings());
-            var footerTempl = templCtrl.GetTemplateData(footer, _lang, true, true, true, StoreSettings.Current.Settings());
-
-            // replace any settings tokens (This is used to place the form data into the SQL)
-            headerTempl = Utils.ReplaceSettingTokens(headerTempl, settings);
-            headerTempl = Utils.ReplaceUrlTokens(headerTempl);
-            bodyTempl = Utils.ReplaceSettingTokens(bodyTempl, settings);
-            bodyTempl = Utils.ReplaceUrlTokens(bodyTempl);
-            footerTempl = Utils.ReplaceSettingTokens(footerTempl, settings);
-            footerTempl = Utils.ReplaceUrlTokens(footerTempl);
-
-            var obj = new NBrightInfo(true);
-            strOut = GenXmlFunctions.RenderRepeater(obj, headerTempl);
-
-            if (paging) // get record count for paging
-            {
-                if (pageNumber == 0) pageNumber = 1;
-                if (pageSize == 0) pageSize = StoreSettings.Current.GetInt("pagesize");
-                recordCount = objCtrl.GetListCount(PortalSettings.Current.PortalId, -1, "PRD", filter,"PRDLANG",_lang);
-            }
-
-            var objList = objCtrl.GetDataList(PortalSettings.Current.PortalId, -1, "PRD", "PRDLANG", _lang, filter, orderby, StoreSettings.Current.DebugMode,"",returnLimit,pageNumber,pageSize,recordCount);
-            strOut += GenXmlFunctions.RenderRepeater(objList, bodyTempl);
-
-            strOut += GenXmlFunctions.RenderRepeater(obj, footerTempl);
-
-            // add paging if needed
-            if (paging)
-            {
-                var pg = new NBrightCore.controls.PagingCtrl();
-                strOut += pg.RenderPager(recordCount, pageSize, pageNumber);
-            }
-
-            return strOut;
+            var controlMapPath = HttpContext.Current.Server.MapPath("/DesktopModules/NBright/NBrightPL");
+            var templCtrl = new NBrightCore.TemplateEngine.TemplateGetter(PortalSettings.Current.HomeDirectoryMapPath, controlMapPath, "Themes\\config", "");
+            var templ = templCtrl.GetTemplateData(templatename, lang);
+            templ = Utils.ReplaceUrlTokens(templ);
+            return templ;
         }
 
-        private Dictionary<String, String> GetAjaxFields(HttpContext context)
+        private NBrightInfo GetAjaxFields(HttpContext context)
         {
             var strIn = HttpUtility.UrlDecode(Utils.RequestParam(context, "inputxml"));
             var xmlData = GenXmlFunctions.GetGenXmlByAjax(strIn, "");
@@ -243,12 +229,12 @@ namespace Nevoweb.DNN.NBrightPL
 
             // set the context  culturecode, so any DNN functions use the correct culture (entryurl tag token)
             if (_lang != "" && _lang != System.Threading.Thread.CurrentThread.CurrentCulture.ToString()) System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo(_lang);
-            return dic;
+            return objInfo;
         }
 
         private Boolean CheckRights()
         {
-            if (UserController.GetCurrentUserInfo().IsInRole(StoreSettings.ManagerRole) || UserController.GetCurrentUserInfo().IsInRole(StoreSettings.EditorRole) || UserController.GetCurrentUserInfo().IsInRole("Administrators"))
+            if (UserController.GetCurrentUserInfo().IsInRole("Manager") || UserController.GetCurrentUserInfo().IsInRole("Editor") || UserController.GetCurrentUserInfo().IsInRole("Administrators"))
             {
                 return true;
             }
