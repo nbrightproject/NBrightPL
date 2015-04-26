@@ -21,7 +21,7 @@ namespace NBrightPL.common
         public NBrightInfo Info;
         public TabInfo TabInfo;
         private String _lang = ""; // needed for webservice
-        private int _portalId; 
+        private int _portalId;
 
         /// <summary>
         /// Populate the class
@@ -115,7 +115,10 @@ namespace NBrightPL.common
         {
             var objCtrl = new NBrightDataController();
             objCtrl.Update(DataRecord);
-            objCtrl.Update(DataLangRecord);            
+            objCtrl.Update(DataLangRecord);
+            var menucachekey = "NBrightPL*" + PortalSettings.Current.PortalId + "*" + _lang;
+            Utils.RemoveCache(menucachekey);
+
         }
 
 

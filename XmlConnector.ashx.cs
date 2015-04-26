@@ -62,6 +62,12 @@ namespace Nevoweb.DNN.NBrightPL
                 case "saveformdata":
                     if (CheckRights()) strOut = SaveTabData(context);
                     break;
+                case "getsetting":
+                    strOut = GetSettings(context, "settings.html");
+                    break;
+                case "savesetting":
+                    strOut = SaveSettings(context);
+                    break;
             }
 
             #endregion
@@ -89,6 +95,69 @@ namespace Nevoweb.DNN.NBrightPL
 
         #region "Methods"
 
+        private String SaveSettings(HttpContext context)
+        {
+            try
+            {
+                //get uploaded params
+                var ajaxInfo = GetAjaxFields(context);
+                var tabid = ajaxInfo.GetXmlProperty("genxml/hidden/tabid");
+                var selectlang = ajaxInfo.GetXmlProperty("genxml/hidden/selectlang");
+
+                var objCtrl = new NBrightDataController();
+                var dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "SETTINGS", "NBrightPL");
+                if (dataRecord == null)
+                {
+                    dataRecord = new NBrightInfo(true); // populate empty XML so we can update nodes.
+                    dataRecord.GUIDKey = "NBrightPL";
+                    dataRecord.PortalId = PortalSettings.Current.PortalId;
+                    dataRecord.ModuleId = -1;
+                    dataRecord.TypeCode = "SETTINGS";
+                    dataRecord.Lang = "";
+                }
+
+                var strIn = HttpUtility.UrlDecode(Utils.RequestParam(context, "inputxml"));
+                dataRecord.UpdateAjax(strIn);
+                objCtrl.Update(dataRecord);
+
+                return "";
+
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+
+        }
+
+
+        private String GetSettings(HttpContext context, String templateName)
+        {
+            try
+            {
+                var strOut = "";
+                //get uploaded params
+                var ajaxInfo = GetAjaxFields(context);
+                var tabid = ajaxInfo.GetXmlProperty("genxml/hidden/itemid");
+                var selectlang = ajaxInfo.GetXmlProperty("genxml/hidden/selectlang");
+                var lang = ajaxInfo.GetXmlProperty("genxml/hidden/lang");
+                var baselang = ajaxInfo.GetXmlProperty("genxml/hidden/baselang");
+
+                    // get template
+                    var objCtrl = new NBrightDataController();
+                    var bodyTempl = GetTemplateData(templateName, lang);
+                    var dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "SETTINGS", "NBrightPL");
+                    strOut = GenXmlFunctions.RenderRepeater(dataRecord, bodyTempl);
+
+                return strOut;
+
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+
+        }
 
         private String GetTabData(HttpContext context, String templateName)
         {
@@ -143,48 +212,9 @@ namespace Nevoweb.DNN.NBrightPL
                     //save data
                     if (tabData.Exists)
                     {
-                        var nodList2 = ajaxInfo.XMLDoc.SelectNodes("genxml/*");
-                        if (nodList2 != null)
-                        {
-                            foreach (XmlNode nod1 in nodList2)
-                            {
-                                var nodList = ajaxInfo.XMLDoc.SelectNodes("genxml/" + nod1.Name.ToLower() + "/*");
-                                if (nodList != null)
-                                {
-                                    foreach (XmlNode nod in nodList)
-                                    {
-                                        if (nod.Attributes != null && nod.Attributes["update"] != null)
-                                        {
-                                            if (nod1.Name.ToLower() == "checkboxlist")
-                                            {
-                                                if (nod.Attributes["update"].InnerText.ToLower() == "save")
-                                                {
-                                                    tabData.DataRecord.RemoveXmlNode("genxml/checkboxlist/" + nod.Name.ToLower());
-                                                    tabData.DataRecord.AddXmlNode(nod.OuterXml, nod.Name.ToLower(), "genxml/checkboxlist");
-                                                }
-                                                if (nod.Attributes["update"].InnerText.ToLower() == "lang")
-                                                {
-                                                    tabData.DataLangRecord.RemoveXmlNode("genxml/checkboxlist/" + nod.Name.ToLower());
-                                                    tabData.DataLangRecord.AddXmlNode(nod.OuterXml, nod.Name.ToLower(), "genxml/checkboxlist");
-                                                }                                                                                                
-                                            }
-                                            else
-                                            {
-                                                if (nod.Attributes["update"].InnerText.ToLower() == "save")
-                                                {
-                                                    tabData.DataRecord.SetXmlProperty("genxml/" + nod1.Name.ToLower() + "/" + nod.Name.ToLower(),nod.InnerText);
-                                                }
-                                                if (nod.Attributes["update"].InnerText.ToLower() == "lang")
-                                                {
-                                                    tabData.DataLangRecord.SetXmlProperty("genxml/" + nod1.Name.ToLower() + "/" + nod.Name.ToLower(),nod.InnerText);
-                                                }                                                
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }                            
-                        }
+                        var strIn = HttpUtility.UrlDecode(Utils.RequestParam(context, "inputxml"));
+                        tabData.DataRecord.UpdateAjax(strIn);
+                        tabData.DataLangRecord.UpdateAjax(strIn);
                         tabData.Save();                        
                     }
                 }

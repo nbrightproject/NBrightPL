@@ -34,6 +34,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Support\DNN6x\bin\DotNetNuke.dll</HintPath>
     </Reference>
+    <Reference Include="DotNetNuke.Web.DDRMenu">
+      <HintPath>..\..\..\..\..\..\Support\DNN6x\bin\DotNetNuke.Web.DDRMenu.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.WebControls">
+      <HintPath>..\..\..\..\..\..\Support\DNN6x\bin\DotNetNuke.WebControls.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -48,8 +54,16 @@
     <Compile Include="Base\NBrightPLBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="common\DDRMenuInterface.cs" />
     <Compile Include="common\LocalUtils.cs" />
     <Compile Include="common\TabData.cs" />
+    <Compile Include="Meta.ascx.cs">
+      <DependentUpon>Meta.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Meta.ascx.designer.cs">
+      <DependentUpon>Meta.ascx.cs</DependentUpon>
+    </Compile>
     <Compile Include="render\GenXmlTemplateExt.cs" />
     <Compile Include="View.ascx.cs">
       <DependentUpon>View.ascx</DependentUpon>
@@ -67,10 +81,14 @@
     <EmbeddedResource Include="App_LocalResources\View.ascx.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Meta.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="Skins\NBrightPL\NBrightPL.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Skins\NBrightPL\NBrightPL.doctype.xml" />
+    <Content Include="Themes\config\default\settings.html" />
     <Content Include="Themes\config\default\viewbodybase.html" />
     <Content Include="Themes\config\default\viewbody.html" />
     <Content Include="Themes\config\default\viewfooter.html" />
@@ -97,6 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="XmlConnector.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

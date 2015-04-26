@@ -1,0 +1,1 @@
+<%@ Control language="C#" Inherits="Nevoweb.DNN.NBrightPL.Meta" AutoEventWireup="true"  Codebehind="Meta.ascx.cs" %>

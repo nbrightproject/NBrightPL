@@ -29,7 +29,20 @@
             nbxget('getbasedata', '#selectparams', '#tabbaselanguagefields');
         });
 
-        
+
+        $('#selectsettings').click(function () {
+            $('#settingsdiv').show();
+            $('#tabupdate').hide();
+            nbxget('getsetting', '#selectparams', '#settings');
+        });
+        $('#selecttabupdate').click(function () {
+            $('#settingsdiv').hide();
+            $('#tabupdate').show();
+        });
+        $('#savesettings').click(function () {
+            nbxget('savesetting', '#settings');
+        });
+
 
     });
 
@@ -49,6 +62,18 @@
     [<tag type="currentculture" />]
         
 </div>
+
+<div id="selectsettings">Settings</div>
+<div id="selecttabupdate">Edit Tabs</div>
+<hr/>
+<div id="settingsdiv" style="display:none;">
+    <div id="savesettings">SAVE</div>
+<div id="settings">
+        
+</div>
+</div>
+
+<div id="tabupdate">  
 
 <div class="treetabdiv" style="float:left;">
 [<tag type="treetabli" cssclass="tabclass" />]    
@@ -72,5 +97,7 @@
     <div id="tablanguagefields">
     </div>
     </div>
+
+</div>
 
 </div>
