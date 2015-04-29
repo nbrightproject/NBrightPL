@@ -15,7 +15,6 @@
 
         $('#savetabdata').click(function () {
             nbxget('saveformdata', '#tablanguagefields');
-            nbxget('getformdata', '#selectparams', '#tablanguagefields');
         });
 
         $('.selecteditlanguage').click(function () {
@@ -43,13 +42,29 @@
             nbxget('savesetting', '#settings');
         });
 
-
     });
 
     $(document).on("nbxgetcompleted", nbxgetCompleted);
 
     function nbxgetCompleted(e) {
-        e.preventDefault();
+        lockedit();
+        $('input[[id*="_lock_"]]').change(function () {
+            lockedit();
+        });
+    }
+
+    function lockedit() {
+        if ($('input[[id*="_lock_"]]').is(':checked')) {
+            $('input[[id*="_pagename_"]]').attr("disabled", "disabled");
+            $('input[[id*="_pagetitle_"]]').attr("disabled", "disabled");
+            $('textarea[[id*="_tagwords_"]]').attr("disabled", "disabled");
+            $('textarea[[id*="_pagedescription_"]]').attr("disabled", "disabled");
+        } else {
+            $('input[[id*="_pagename_"]]').removeAttr("disabled");
+            $('input[[id*="_pagetitle_"]]').removeAttr("disabled");
+            $('textarea[[id*="_tagwords_"]]').removeAttr("disabled");
+            $('textarea[[id*="_pagedescription_"]]').removeAttr("disabled");
+        }
     }
 
 </script>
