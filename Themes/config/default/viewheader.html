@@ -1,42 +1,67 @@
+[<tag id="resourcepath" type="meta" value="/DesktopModules/NBright/NBrightPL/App_LocalResources/" />]
+
 <script type="text/javascript" src="/DesktopModules/NBright/NBrightPL/Themes/config/js/nbrightplajax.js"></script>
 <script type="text/javascript" src="/DesktopModules/NBright/NBrightData/js/jquery.genxmlajax.js"></script>
+
+<link href="/DesktopModules/NBright/NBrightData/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
 
 
 <script type="text/javascript">
 
     $(document).ready(function () {
 
-        $('.tabclass').click(function () {
-            $('input[[id*="_itemid_"]]').val($(this).attr('tabid'));
+        $('.tabclass').change(function () {
+            $('.processing').show();
+            $('input[[id*="_itemid_"]]').val($(this).val());
             nbxget('getformdata', '#selectparams', '#tablanguagefields');
             nbxget('getbasedata', '#selectparams', '#tabbaselanguagefields');
-            $('#editdiv').show();
+            $('input[[id*="_baselangtrans_"]]').val($('input[[id*="_baselang_"]]'));
+
+            $('.tabupdate').show();
+            $('#savetabdata').show();
         });
 
         $('#savetabdata').click(function () {
+            $('.processing').show();
             nbxget('saveformdata', '#tablanguagefields');
         });
 
         $('.selecteditlanguage').click(function () {
+            $('.processing').show();
             nbxget('saveformdata', '#tablanguagefields');
             $('input[[id*="_selectlang_"]]').val($(this).attr('lang'));
             nbxget('getformdata', '#selectparams', '#tablanguagefields');
         });
 
         $('.selectbaselanguage').click(function () {
+            $('.processing').show();
             $('input[[id*="_baselang_"]]').val($(this).attr('lang'));
+            $('input[[id*="_baselangtrans_"]]').val($(this).attr('lang'));
             nbxget('getbasedata', '#selectparams', '#tabbaselanguagefields');
+        });        
+
+        $('#translatelanguage').click(function () {
+            $('.processing').show();
+            $('input[[id*="_baselangtrans_"]]').val($('input[[id*="_baselangfortrans_"]]').val());
+            nbxget('translate', '#tablanguagefields', '#tablanguagefields');
         });
 
-
-        $('#selectsettings').click(function () {
-            $('#settingsdiv').show();
-            $('#tabupdate').hide();
+        $('#tablanguagefields').change(function () {
+            if ($(this).html() == 'reload') {
+                $('.processing').show();
+                nbxget('getformdata', '#selectparams', '#tablanguagefields');
+            }
+        });
+        
+        $('.selectsettings').click(function () {
+            $('.settingsdiv').show();
+            $('.tabupdate').hide();
             nbxget('getsetting', '#selectparams', '#settings');
         });
-        $('#selecttabupdate').click(function () {
-            $('#settingsdiv').hide();
-            $('#tabupdate').show();
+        $('.selecttabupdate').click(function () {
+            $('.settingsdiv').hide();
+            $('.tabupdate').show();
         });
         $('#savesettings').click(function () {
             nbxget('savesetting', '#settings');
@@ -51,6 +76,11 @@
         $('input[[id*="_lock_"]]').change(function () {
             lockedit();
         });
+        if ($('input[[id*="_langfortranslate_"]]').val() == $('input[[id*="_baselangfortrans_"]]').val())
+            $('#translatelanguage').hide();
+        else
+            $('#translatelanguage').show();
+        $('.processing').hide();
     }
 
     function lockedit() {
@@ -68,6 +98,35 @@
     }
 
 </script>
+<style>
+.flag-list{
+    background: #f7f7f7;   
+    padding: 8px;
+}
+
+.flag-list > li {
+    display: inline-block;
+    /* You can also add some margins here to make it look prettier */
+    zoom:1;
+    *display:inline;
+    /* this fix is needed for IE7- */
+}
+
+.flag-list > li > a{
+    color: #666666;
+    text-decoration: none;
+    padding: 3px 8px;
+}
+
+.flag-list > li > a:hover{
+    color: black;
+}
+
+/* .top-panel-right{display: none;}Hide top right menu section */
+#loader{opacity:0}
+#loader{background: none repeat scroll 0 0 #848D92;color:#ffffff;height: 100%;padding-top: 25%;left: 0;opacity: 0.4;transition:all 0.4s ease-in-out 0s;position: absolute;text-align: center;top: 0;width: 100%;z-index: 9999;}/* Loading graphic */
+
+</style>
 
 
 <div id="selectparams">
@@ -78,41 +137,49 @@
         
 </div>
 
-<div id="selectsettings">Settings</div>
-<div id="selecttabupdate">Edit Tabs</div>
-<hr/>
-<div id="settingsdiv" style="display:none;">
-    <div id="savesettings">SAVE</div>
-<div id="settings">
-        
-</div>
-</div>
 
-<div id="tabupdate">  
+<ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active selecttabupdate">[<tag type="valueof" resourcekey="View.edittabs" />]</li>
+        <li role="presentation" class="active selectsettings">[<tag type="valueof" resourcekey="View.settings" />]</li>
+</ul>
 
-<div class="treetabdiv" style="float:left;">
-[<tag type="treetabli" cssclass="tabclass" />]    
-</div>
-<div id="editdiv" style="display:none;float:left;">
+
+<div class="container tabupdate" >
     
-    <div id="basediv" style="float:left;">
-          
-    BASE: <div id="baselangaugediv">[<tag id="baselanguage" type="basecultureselect" />]</div>
-    <hr/>
-    <div id="tabbaselanguagefields">
-    </div>
+<div>
+Page: [<tag id="ddlTabId" type="dropdownlist" cssclass="tabclass" datatabs="blank" />]
+                <button id="savetabdata" type="button" class="btn btn-sm btn-success" style="display:none;"><span class="glyphicon glyphicon-floppy-save"></span> [<tag type="valueof" resourcekey="View.save" />]</button>
+                <button id="translatelanguage" type="button" class="btn btn-sm btn-primary" style="display:none;"><span class="glyphicon glyphicon-globe"></span> [<tag type="valueof" resourcekey="View.translate" />]</button>    
+</div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2>[<tag type="valueof" resourcekey="View.base" />]</h2>
+                [<tag id="baselanguage" type="cultureselect" cssclass="flag-list" cssclassli="selectbaselanguage" />]
+                <hr/>
+                <div id="tabbaselanguagefields">
+                </div>
+        </div>
         
-    </div>
- 
-    <div id="editdiv" style="float:left;">
-        EDIT: <div id="editlangaugediv">[<tag id="editlangauge" type="editcultureselect" />]</div>
-    <div id="savetabdata">SAVE</div>
+        <div class="col-md-6">
+            <h2>[<tag type="valueof" resourcekey="View.edit" />]</h2>                                 
+                [<tag id="editlangauge" type="cultureselect" cssclass="flag-list" cssclassli="selecteditlanguage" />]
+                <div id="tablanguagefields">
+                </div>
+        </div>
 
-    <hr/>
-    <div id="tablanguagefields">
     </div>
-    </div>
+ </div>
 
+<div class="container settingsdiv" style="display:none;">
+    <div class="row">
+    <div class="col-md-12" >
+        <h2>[<tag type="valueof" resourcekey="View.settings" />]</h2>
+        <button id="savesettings" type="button" class="btn btn-sm btn-success" style="display:none;"><span class="glyphicon glyphicon-floppy-save"></span> Save</button>
+        <div id="settings">      
+        </div>
+    </div>
+    </div>
 </div>
 
-</div>
+<div id="loader" class="processing" style="display:none;"><i class="glyphicon glyphicon-cog"></i></div>

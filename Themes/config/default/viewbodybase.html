@@ -1,24 +1,22 @@
+[<tag id="resourcepath" type="meta" value="/DesktopModules/NBright/NBrightPL/App_LocalResources/" />]
 <div class="language">
     [<tag id="tabid" type="hidden" databind="guidkey"  value="" />]
     [<tag id="lang" type="hidden" databind="lang" value="" />]
+    [<tag id="baselangfortrans" type="hidden" databind="lang" value="" />]
 
-    [<tag type='valueof' databind="itemid" value="" />]
-    
-    TabId: [<tag type='valueof' databind="guidkey" value="" />]
-    
     <img src='/Images/Flags/[<tag type='valueof' databind="lang" value="" />].gif' width='16px' />
 
     <div>
-        Page Name:<br/>[<tag type="valueof" xpath="genxml/lang/genxml/textbox/pagename"/>] 
+        [<tag type="valueof" resourcekey="View.pagename" />]<br/>[<tag type="valueof" xpath="genxml/lang/genxml/textbox/pagename"/>] 
     </div>
     <div>
-        Page Title:<br/>[<tag type="valueof" xpath="genxml/lang/genxml/textbox/pagetitle"/>]
+        [<tag type="valueof" resourcekey="View.pagetitle" />]<br/>[<tag type="valueof" xpath="genxml/lang/genxml/textbox/pagetitle"/>]
     </div>
     <div>
-        Page TagWords:<br/>[<tag type="breakof" xpath="genxml/lang/genxml/textbox/tagwords"/>]
+        [<tag type="valueof" resourcekey="View.pagetagwords" />]<br/>[<tag type="breakof" xpath="genxml/lang/genxml/textbox/tagwords"/>]
     </div>
     <div>
-        Page Description:<br/>[<tag type="breakof" xpath="genxml/lang/genxml/textbox/pagedescription"/>]
+        [<tag type="valueof" resourcekey="View.pagedescription" />]<br/>[<tag type="breakof" xpath="genxml/lang/genxml/textbox/pagedescription"/>]
     </div>
     
 </div>

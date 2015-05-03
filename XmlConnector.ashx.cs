@@ -6,6 +6,7 @@ using System.Web;
 using System.Xml;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
+using NBrightCore;
 using NBrightCore.common;
 using NBrightCore.render;
 using NBrightDNN;
@@ -31,6 +32,7 @@ namespace Nevoweb.DNN.NBrightPL
             var itemId = Utils.RequestQueryStringParam(context, "itemid");
             var lang = Utils.RequestQueryStringParam(context, "lang");
             var language = Utils.RequestQueryStringParam(context, "language");
+            var baselang = Utils.RequestQueryStringParam(context, "baselang");
 
             #region "setup language"
 
@@ -67,6 +69,10 @@ namespace Nevoweb.DNN.NBrightPL
                     break;
                 case "savesetting":
                     strOut = SaveSettings(context);
+                    break;
+                case "translate":
+                    TranslateForm(context);
+                    strOut = "reload";
                     break;
             }
 
@@ -227,6 +233,54 @@ namespace Nevoweb.DNN.NBrightPL
                 return ex.ToString();
             }
 
+        }
+
+        private void TranslateForm(HttpContext context)
+        {
+            try
+            {
+                var objCtrl = new NBrightDataController();
+                var settings = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "SETTINGS", "NBrightPL");
+                var clientId = settings.GetXmlProperty("genxml/textbox/bingclientid");
+                var clientSecret = settings.GetXmlProperty("genxml/textbox/bingclientsecret");
+
+                var headerValue = Utils.GetTranslatorHeaderValue(clientId, clientSecret);
+
+                //get uploaded params
+                var ajaxInfo = GetAjaxFields(context);
+                var tabid = ajaxInfo.GetXmlProperty("genxml/hidden/tabid");
+                var selectlang = ajaxInfo.GetXmlProperty("genxml/hidden/lang");
+                var baselang = ajaxInfo.GetXmlProperty("genxml/hidden/baselangtrans");
+                if (selectlang == "") selectlang = Utils.GetCurrentCulture();
+                if (baselang == "") baselang = Utils.GetCurrentCulture();
+
+                if (Utils.IsNumeric(tabid) && (baselang != selectlang))
+                {
+                    var baseData = new TabData(tabid, baselang);
+                    var tabData = new TabData(tabid, selectlang);
+                    //save data
+                    if (tabData.Exists && baseData.Exists)
+                    {
+                        baselang = baselang.Substring(0, 2);
+                        selectlang = selectlang.Substring(0, 2);
+
+                        var nodList = baseData.DataLangRecord.XMLDoc.SelectNodes("genxml/textbox/*");
+                        if (nodList != null)
+                        {
+                            foreach (XmlNode nod in nodList)
+                            {
+                                var newText = Utils.GetTranslatedText(headerValue, nod.InnerText, baselang, selectlang);
+                                tabData.DataLangRecord.SetXmlProperty("genxml/textbox/" + nod.Name, newText);
+                            }
+                            tabData.Save();                            
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // ignore
+            }
         }
 
 

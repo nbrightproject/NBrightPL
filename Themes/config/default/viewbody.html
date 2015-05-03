@@ -1,24 +1,23 @@
+[<tag id="resourcepath" type="meta" value="/DesktopModules/NBright/NBrightPL/App_LocalResources/" />]
 <div class="language">
     [<tag id="tabid" type="hidden" databind="guidkey"  value="" />]
     [<tag id="lang" type="hidden" databind="lang" value="" />]
-
-    [<tag type='valueof' databind="itemid" value="" />]
-    
-    TabId: [<tag type='valueof' databind="guidkey" value="" />]
-    
+    [<tag id="baselangtrans" type="postback"  databind="lang" value="" />]
+    [<tag id="langfortranslate" type="hidden" databind="lang" value="" />]
+      
     <img src='/Images/Flags/[<tag type='valueof' databind="lang" value="" />].gif' width='16px' />
 
     <div>
-        Page Name:<br/>[<tag id="pagename" update="lang" type="textbox" width="300" maxlength="250" />] 
+        [<tag type="valueof" resourcekey="View.pagename" />]<br/>[<tag id="pagename" update="lang" type="textbox" width="300" maxlength="250" />] 
     </div>
     <div>
-        Page Title:<br/>[<tag id="pagetitle" update="lang" type="textbox" width="300" maxlength="250" />]  
+        [<tag type="valueof" resourcekey="View.pagetitle" />]<br/>[<tag id="pagetitle" update="lang" type="textbox" width="300" maxlength="250" />]  
     </div>
     <div>
-        Page TagWords:<br/>[<tag id="tagwords" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
+        [<tag type="valueof" resourcekey="View.pagetagwords" />]<br/>[<tag id="tagwords" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
     </div>
     <div>
-        Page Description:<br/>[<tag id="pagedescription" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
+        [<tag type="valueof" resourcekey="View.pagedescription" />]<br/>[<tag id="pagedescription" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
     </div>
     <div>
         [<tag id="lock" type="checkbox"  update="lang" />] Lock

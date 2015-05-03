@@ -57,6 +57,13 @@
     <Compile Include="common\DDRMenuInterface.cs" />
     <Compile Include="common\LocalUtils.cs" />
     <Compile Include="common\TabData.cs" />
+    <Compile Include="BreadCrumb.ascx.cs">
+      <DependentUpon>BreadCrumb.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BreadCrumb.ascx.designer.cs">
+      <DependentUpon>BreadCrumb.ascx.cs</DependentUpon>
+    </Compile>
     <Compile Include="Meta.ascx.cs">
       <DependentUpon>Meta.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -81,6 +88,9 @@
     <EmbeddedResource Include="App_LocalResources\View.ascx.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BreadCrumb.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="Meta.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>

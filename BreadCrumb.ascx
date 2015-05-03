@@ -1,0 +1,2 @@
+<%@ Control language="C#" Inherits="Nevoweb.DNN.NBrightPL.BreadCrumb" AutoEventWireup="true"  Codebehind="BreadCrumb.ascx.cs" %>
+<asp:PlaceHolder ID="NBrightPLBreadCrumb" runat="server"></asp:PlaceHolder>

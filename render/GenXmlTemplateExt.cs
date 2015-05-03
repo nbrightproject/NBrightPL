@@ -46,11 +46,8 @@ namespace NBrightPL.render
                 case "treetabli":
                     CreateTreeLi(container, xmlNod);
                     return true;
-                case "editcultureselect":
-                    CreateEditCultureSelect(container, xmlNod,"editlanguage");
-                    return true;
-                case "basecultureselect":
-                    CreateEditCultureSelect(container, xmlNod, "baselanguage");
+                case "cultureselect":
+                    CreateEditCultureSelect(container, xmlNod);
                     return true;
                 default:
                     return false;
@@ -118,14 +115,19 @@ namespace NBrightPL.render
         }
 
 
-        private void CreateEditCultureSelect(Control container, XmlNode xmlNod,String cssclass)
+        private void CreateEditCultureSelect(Control container, XmlNode xmlNod)
         {
+            var cssclass = "";
+            if (xmlNod.Attributes != null && (xmlNod.Attributes["cssclass"] != null)) cssclass = xmlNod.Attributes["cssclass"].InnerText;
+            var cssclassli = "";
+            if (xmlNod.Attributes != null && (xmlNod.Attributes["cssclassli"] != null)) cssclassli = xmlNod.Attributes["cssclassli"].InnerText;
+
             var enabledlanguages = LocaleController.Instance.GetLocales(PortalSettings.Current.PortalId);
             var strOut = "<ul class='" + cssclass + "'>";
             foreach (var l in enabledlanguages)
             {
                 strOut += "<li>";
-                strOut += "<a href='javascript:void(0)' lang='" + l.Value.Code + "' class='select" + cssclass + "'><img src='/Images/Flags/" + l.Value.Code + ".gif' alt='" + l.Value.NativeName + "' /></a>";
+                strOut += "<a href='javascript:void(0)' lang='" + l.Value.Code + "' class='" + cssclassli + "'><img src='/Images/Flags/" + l.Value.Code + ".gif' alt='" + l.Value.NativeName + "' /></a>";
                 strOut += "</li>";
             }
             strOut += "</ul>";
