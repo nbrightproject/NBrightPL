@@ -29,11 +29,6 @@ using Nevoweb.DNN.NBrightPL.Base;
 namespace Nevoweb.DNN.NBrightPL
 {
 
-    /// -----------------------------------------------------------------------------
-    /// <summary>
-    /// The ViewNBrightGen class displays the content
-    /// </summary>
-    /// -----------------------------------------------------------------------------
     public partial class Meta : SkinObjectBase 
     {
 
@@ -47,9 +42,9 @@ namespace Nevoweb.DNN.NBrightPL
                 var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
 
                 var bPage = (DotNetNuke.Framework.CDefault) this.Page;
-                bPage.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
-                bPage.KeyWords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords"); 
-                bPage.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription"); 
+                if (dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle") != "") bPage.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
+                if (dataRecordLang.GetXmlProperty("genxml/textbox/tagwords") != "") bPage.KeyWords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords");
+                if (dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription") != "") bPage.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription"); 
 
             }
             catch (Exception exc)

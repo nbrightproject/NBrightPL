@@ -31,11 +31,6 @@ using Nevoweb.DNN.NBrightPL.Base;
 namespace Nevoweb.DNN.NBrightPL
 {
 
-    /// -----------------------------------------------------------------------------
-    /// <summary>
-    /// The ViewNBrightGen class displays the content
-    /// </summary>
-    /// -----------------------------------------------------------------------------
     public partial class BreadCrumb : SkinObjectBase
     {
 

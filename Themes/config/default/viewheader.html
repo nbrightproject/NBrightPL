@@ -3,6 +3,8 @@
 <script type="text/javascript" src="/DesktopModules/NBright/NBrightPL/Themes/config/js/nbrightplajax.js"></script>
 <script type="text/javascript" src="/DesktopModules/NBright/NBrightData/js/jquery.genxmlajax.js"></script>
 
+<script type="text/javascript" src="/DesktopModules/NBright/NBrightData/bootstrap/js/bootstrap.min.js"></script>
+
 <link href="/DesktopModules/NBright/NBrightData/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
 
@@ -54,20 +56,20 @@
             }
         });
         
-        $('.selectsettings').click(function () {
-            $('.settingsdiv').show();
-            $('.tabupdate').hide();
-            nbxget('getsetting', '#selectparams', '#settings');
-        });
-        $('.selecttabupdate').click(function () {
-            $('.settingsdiv').hide();
-            $('.tabupdate').show();
-        });
         $('#savesettings').click(function () {
             nbxget('savesetting', '#settings');
         });
 
+        $('a[[data-toggle="tab"]]').click(function (e) {
+            if ($(this).attr('href') == '#settingsdiv') {
+                nbxget('getsetting', '#selectparams', '#settings');
+            }
+        });
+        $('#tablist a').first().tab('show');
+
     });
+
+
 
     $(document).on("nbxgetcompleted", nbxgetCompleted);
 
@@ -96,6 +98,7 @@
             $('textarea[[id*="_pagedescription_"]]').removeAttr("disabled");
         }
     }
+
 
 </script>
 <style>
@@ -126,6 +129,9 @@
 #loader{opacity:0}
 #loader{background: none repeat scroll 0 0 #848D92;color:#ffffff;height: 100%;padding-top: 25%;left: 0;opacity: 0.4;transition:all 0.4s ease-in-out 0s;position: absolute;text-align: center;top: 0;width: 100%;z-index: 9999;}/* Loading graphic */
 
+.container-fluid {
+    padding: 0 15px;
+}
 </style>
 
 
@@ -138,48 +144,56 @@
 </div>
 
 
-<ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active selecttabupdate">[<tag type="valueof" resourcekey="View.edittabs" />]</li>
-        <li role="presentation" class="active selectsettings">[<tag type="valueof" resourcekey="View.settings" />]</li>
+<ul id="tablist" class="nav nav-tabs">
+    <li class="active"><a href="#tabupdate" data-toggle="tab">[<tag type="valueof" resourcekey="View.edittabs" />]</a></li>
+    <li><a href="#settingsdiv" data-toggle="tab">[<tag type="valueof" resourcekey="View.settings" />]</a></li>
 </ul>
-
-
-<div class="container tabupdate" >
+<hr/>
+<div id="myTabContent" class="tab-content">
     
-<div>
-Page: [<tag id="ddlTabId" type="dropdownlist" cssclass="tabclass" datatabs="blank" />]
+    <div id="tabupdate" class="tab-pane fade in active" >
+       <div class="container-fluid">            
+            <div>
+                Page: [<tag id="ddlTabId" type="dropdownlist" cssclass="tabclass" datatabs="blank" />]
                 <button id="savetabdata" type="button" class="btn btn-sm btn-success" style="display:none;"><span class="glyphicon glyphicon-floppy-save"></span> [<tag type="valueof" resourcekey="View.save" />]</button>
                 <button id="translatelanguage" type="button" class="btn btn-sm btn-primary" style="display:none;"><span class="glyphicon glyphicon-globe"></span> [<tag type="valueof" resourcekey="View.translate" />]</button>    
-</div>
+            </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <h2>[<tag type="valueof" resourcekey="View.base" />]</h2>
-                [<tag id="baselanguage" type="cultureselect" cssclass="flag-list" cssclassli="selectbaselanguage" />]
-                <hr/>
-                <div id="tabbaselanguagefields">
+            <div class="row">
+                <div class="col-md-5">
+                    <h2>[<tag type="valueof" resourcekey="View.base" />]</h2>
+                    [<tag id="baselanguage" type="cultureselect" cssclass="flag-list" cssclassli="selectbaselanguage" />]
+                    <hr/>
+                    <div id="tabbaselanguagefields">
+                    </div>
                 </div>
-        </div>
         
-        <div class="col-md-6">
-            <h2>[<tag type="valueof" resourcekey="View.edit" />]</h2>                                 
-                [<tag id="editlangauge" type="cultureselect" cssclass="flag-list" cssclassli="selecteditlanguage" />]
-                <div id="tablanguagefields">
+                <div class="col-md-5">
+                    <h2>[<tag type="valueof" resourcekey="View.edit" />]</h2>                                 
+                    [<tag id="editlangauge" type="cultureselect" cssclass="flag-list" cssclassli="selecteditlanguage" />]
+                    <div id="tablanguagefields">
+                    </div>
                 </div>
-        </div>
 
-    </div>
- </div>
-
-<div class="container settingsdiv" style="display:none;">
-    <div class="row">
-    <div class="col-md-12" >
-        <h2>[<tag type="valueof" resourcekey="View.settings" />]</h2>
-        <button id="savesettings" type="button" class="btn btn-sm btn-success" style="display:none;"><span class="glyphicon glyphicon-floppy-save"></span> Save</button>
-        <div id="settings">      
+            </div>
         </div>
     </div>
+
+    <div id="settingsdiv" class="tab-pane fade">
+        <div class="container-fluid">
+            
+            <div class="row">
+                <div class="col-md-12" >
+                    <h2>[<tag type="valueof" resourcekey="View.settings" />]</h2>
+                    <button id="savesettings" type="button" class="btn btn-sm btn-success" style="display:none;"><span class="glyphicon glyphicon-floppy-save"></span> Save</button>
+                    <div id="settings">      
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+
 </div>
 
 <div id="loader" class="processing" style="display:none;"><i class="glyphicon glyphicon-cog"></i></div>
