@@ -39,13 +39,21 @@ namespace Nevoweb.DNN.NBrightPL
                 var objCtrl = new NBrightDataController();
 
                 var dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "PL", PortalSettings.ActiveTab.TabID.ToString(""));
-                var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
+                if (dataRecord != null)
+                {
+                    var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
+                    if (dataRecordLang != null)
+                    {
 
-                var bPage = (DotNetNuke.Framework.CDefault) this.Page;
-                if (dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle") != "") bPage.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
-                if (dataRecordLang.GetXmlProperty("genxml/textbox/tagwords") != "") bPage.KeyWords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords");
-                if (dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription") != "") bPage.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription"); 
-
+                        var bPage = (DotNetNuke.Framework.CDefault) this.Page;
+                        if (dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle") != "")
+                            bPage.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
+                        if (dataRecordLang.GetXmlProperty("genxml/textbox/tagwords") != "")
+                            bPage.KeyWords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords");
+                        if (dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription") != "")
+                            bPage.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription");
+                    }
+                }
             }
             catch (Exception exc)
             {

@@ -91,26 +91,31 @@ namespace Nevoweb.DNN.NBrightPL
                         if (intTab != intRootLevel) strBreadCrumbs += strSeparator;
 
                         var objTab = (TabInfo) PortalSettings.ActiveTab.BreadCrumbs[intTab];
-                        var dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "PL",
-                            objTab.TabID.ToString(""));
-                        var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
-                        var pagename = dataRecordLang.GetXmlProperty("genxml/textbox/pagename");
+                        var dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "PL", objTab.TabID.ToString(""));
+                        if (dataRecord != null)
+                        {
+                            var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
+                            if (dataRecordLang != null)
+                            {
+                                var pagename = dataRecordLang.GetXmlProperty("genxml/textbox/pagename");
 
-                        if (HtmlList)
-                        {
-                            strBreadCrumbs += "<ul class=\"" + strCssClass + "\">";
-                            if (objTab.DisableLink)
-                                strBreadCrumbs += "<li>" + pagename + "</li>";
-                            else
-                                strBreadCrumbs += "<li>" + "<a href=\"" + objTab.FullUrl + "\">" + pagename + "</a>" + "</li>";
-                            strBreadCrumbs += "</ul>";
-                        }
-                        else
-                        {
-                            if (objTab.DisableLink)
-                                strBreadCrumbs += "<span class=\"" + strCssClass + "\">" + pagename + "</span>";
-                            else
-                                strBreadCrumbs += "<a href=\"" + objTab.FullUrl + "\" class=\"" + strCssClass + "\">" + pagename + "</a>";
+                                if (HtmlList)
+                                {
+                                    strBreadCrumbs += "<ul class=\"" + strCssClass + "\">";
+                                    if (objTab.DisableLink)
+                                        strBreadCrumbs += "<li>" + pagename + "</li>";
+                                    else
+                                        strBreadCrumbs += "<li>" + "<a href=\"" + objTab.FullUrl + "\">" + pagename + "</a>" + "</li>";
+                                    strBreadCrumbs += "</ul>";
+                                }
+                                else
+                                {
+                                    if (objTab.DisableLink)
+                                        strBreadCrumbs += "<span class=\"" + strCssClass + "\">" + pagename + "</span>";
+                                    else
+                                        strBreadCrumbs += "<a href=\"" + objTab.FullUrl + "\" class=\"" + strCssClass + "\">" + pagename + "</a>";
+                                }                                                            
+                            }
                         }
                     }
                 }
