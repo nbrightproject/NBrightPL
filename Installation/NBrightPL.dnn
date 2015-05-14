@@ -1,6 +1,6 @@
 ﻿<dotnetnuke type="Package" version="5.0">
 	<packages>
-		<package name="NBrightTemplateSys" type="Module" version="1.0.0">
+		<package name="NBrightPL" type="Module" version="1.0.0">
 			<friendlyName>NBrightPL</friendlyName>
 			<description>NBrightPL is a module to support Page Localization in DNN without having to enable full content localization.</description>
 			<iconFile />
@@ -35,6 +35,7 @@ NBrightPL
 
 NOTES:
 
+This module depends on the NBright template system.  It must be installed for this module to work, you can find the template system at  https://nbrightdnn.codeplex.com/releases/view/612359 
 
 			</releaseNotes>
 			<components>
@@ -51,10 +52,39 @@ NOTES:
 						<assembly>
 							<path>bin</path>
 							<name>NBrightPL.dll</name>
-							<sourceFileName>NBrightCore.dll</sourceFileName>
+							<sourceFileName>NBrightPL.dll</sourceFileName>
 						</assembly>
 					</assemblies>
 				</component>
+				<component type="Module">
+					<desktopModule>
+						<moduleName>NBrightPL</moduleName>
+						<foldername>NBright/NBrightPL</foldername>
+						<businessControllerClass>NBrightPL.Components.NBrightPLController,NBrightPL</businessControllerClass>
+						<supportedFeatures>
+							<supportedFeature type="Portable" />
+						</supportedFeatures>
+						<moduleDefinitions>
+							<moduleDefinition>
+								<friendlyName>NBrightPL</friendlyName>
+								<defaultCacheTime>0</defaultCacheTime>
+								<moduleControls>
+									<moduleControl>
+										<controlKey />
+										<controlSrc>DesktopModules/NBright/NBrightPL/View.ascx</controlSrc>
+										<supportsPartialRendering>False</supportsPartialRendering>
+										<controlTitle />
+										<controlType>View</controlType>
+										<iconFile />
+										<helpUrl />
+										<viewOrder>0</viewOrder>
+									</moduleControl>
+								</moduleControls>
+							</moduleDefinition>
+						</moduleDefinitions>
+					</desktopModule>
+				</component>
+
 			</components>
 		</package>	
 	</packages>

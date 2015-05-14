@@ -103,29 +103,29 @@ namespace Nevoweb.DNN.NBrightPL
 
             #region "Data Repeater"
 
-            if (_templD.Trim() != "") // if we don;t have a template, don't do anything
-            {
-                var tl = DnnUtils.GetPortalTabs(PortalId);
-                var l = new List<NBrightInfo>();
+            //if (_templD.Trim() != "") // if we don;t have a template, don't do anything
+            //{
+            //    var tl = DnnUtils.GetPortalTabs(PortalId);
+            //    var l = new List<NBrightInfo>();
 
 
-                foreach (var t in tl)
-                {
-                    TabInfo tabinfo = t.Value;
-                    var nbiT = new NBrightInfo(true);
-                    nbiT.ItemID = tabinfo.TabID;
-                    nbiT.GUIDKey = tabinfo.TabName;                    
-                    l.Add(nbiT);                    
-                }
+            //    foreach (var t in tl)
+            //    {
+            //        TabInfo tabinfo = t.Value;
+            //        var nbiT = new NBrightInfo(true);
+            //        nbiT.ItemID = tabinfo.TabID;
+            //        nbiT.GUIDKey = tabinfo.TabName;                    
+            //        l.Add(nbiT);                    
+            //    }
 
 
-            }
+            //}
 
             #endregion
 
 
             // display footer
-            base.DoDetail(rpDataF);
+            //base.DoDetail(rpDataF);
 
         }
 

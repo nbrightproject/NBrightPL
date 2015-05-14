@@ -64,6 +64,7 @@
     <Compile Include="BreadCrumb.ascx.designer.cs">
       <DependentUpon>BreadCrumb.ascx.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\NBrightPLController.cs" />
     <Compile Include="Meta.ascx.cs">
       <DependentUpon>Meta.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -41,6 +41,11 @@ namespace Nevoweb.DNN.NBrightPL
             if (lang == "") lang = language;
             if (!string.IsNullOrEmpty(lang)) _lang = lang;
 
+            // default to current thread if we have no language.
+            if (_lang == "") _lang = System.Threading.Thread.CurrentThread.CurrentCulture.ToString();
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture(_lang);
+
             #endregion
 
             #endregion
