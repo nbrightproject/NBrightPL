@@ -7,20 +7,24 @@
       
     <img src='/Images/Flags/[<tag type='valueof' databind="lang" value="" />].gif' width='16px' />
 
-    <div>
-        [<tag type="valueof" resourcekey="View.pagename" />]<br/>[<tag id="pagename" update="lang" type="textbox" width="300" maxlength="250" />] 
+    <div class="formrow">
+        <label>[<tag type="valueof" resourcekey="View.pagename" />]</label>
+        <div>[<tag id="pagename" update="lang" type="textbox" maxlength="250" />]</div>
+    </div>
+    <div class="formrow">
+        <label>[<tag type="valueof" resourcekey="View.pagetitle" />]</label>
+        <div>[<tag id="pagetitle" update="lang" type="textbox" maxlength="250" />]</div>
+    </div>
+    <div class="formrow">
+        <label>[<tag type="valueof" resourcekey="View.pagetagwords" />]</label>
+        <div>[<tag id="tagwords" update="lang" type="textbox" height="100" textmode="MultiLine" />]</div>
+    </div>
+    <div class="formrow">
+        <label>[<tag type="valueof" resourcekey="View.pagedescription" />]</label>
+        <div>[<tag id="pagedescription" update="lang" type="textbox" height="100" textmode="MultiLine" />]</div>
     </div>
     <div>
-        [<tag type="valueof" resourcekey="View.pagetitle" />]<br/>[<tag id="pagetitle" update="lang" type="textbox" width="300" maxlength="250" />]  
-    </div>
-    <div>
-        [<tag type="valueof" resourcekey="View.pagetagwords" />]<br/>[<tag id="tagwords" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
-    </div>
-    <div>
-        [<tag type="valueof" resourcekey="View.pagedescription" />]<br/>[<tag id="pagedescription" update="lang" type="textbox" height="100" width="300" maxlength="200" textmode="MultiLine" />]
-    </div>
-    <div>
-        [<tag id="lock" type="checkbox"  update="lang" />] Lock
+        [<tag id="lock" type="checkbox" update="lang" resourcekey="View.lock"  />]
     </div>
     
 </div>
