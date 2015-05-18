@@ -92,30 +92,36 @@ namespace Nevoweb.DNN.NBrightPL
 
                         var objTab = (TabInfo) PortalSettings.ActiveTab.BreadCrumbs[intTab];
                         var dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "PL", objTab.TabID.ToString(""));
+                        var pagename = "";
                         if (dataRecord != null)
                         {
                             var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
                             if (dataRecordLang != null)
                             {
-                                var pagename = dataRecordLang.GetXmlProperty("genxml/textbox/pagename");
-
-                                if (HtmlList)
-                                {
-                                    strBreadCrumbs += "<ul class=\"" + strCssClass + "\">";
-                                    if (objTab.DisableLink)
-                                        strBreadCrumbs += "<li>" + pagename + "</li>";
-                                    else
-                                        strBreadCrumbs += "<li>" + "<a href=\"" + objTab.FullUrl + "\">" + pagename + "</a>" + "</li>";
-                                    strBreadCrumbs += "</ul>";
-                                }
-                                else
-                                {
-                                    if (objTab.DisableLink)
-                                        strBreadCrumbs += "<span class=\"" + strCssClass + "\">" + pagename + "</span>";
-                                    else
-                                        strBreadCrumbs += "<a href=\"" + objTab.FullUrl + "\" class=\"" + strCssClass + "\">" + pagename + "</a>";
-                                }                                                            
+                                pagename = dataRecordLang.GetXmlProperty("genxml/textbox/pagename");
                             }
+                        }
+                        else
+                        {
+                            // no PL data, so use normal tab data
+                            pagename = objTab.TabName;
+                        }
+
+                        if (HtmlList)
+                        {
+                            strBreadCrumbs += "<ul class=\"" + strCssClass + "\">";
+                            if (objTab.DisableLink)
+                                strBreadCrumbs += "<li>" + pagename + "</li>";
+                            else
+                                strBreadCrumbs += "<li>" + "<a href=\"" + objTab.FullUrl + "\">" + pagename + "</a>" + "</li>";
+                            strBreadCrumbs += "</ul>";
+                        }
+                        else
+                        {
+                            if (objTab.DisableLink)
+                                strBreadCrumbs += "<span class=\"" + strCssClass + "\">" + pagename + "</span>";
+                            else
+                                strBreadCrumbs += "<a href=\"" + objTab.FullUrl + "\" class=\"" + strCssClass + "\">" + pagename + "</a>";
                         }
                     }
                 }

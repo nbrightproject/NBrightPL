@@ -16,7 +16,12 @@ namespace NBrightPL.common
         public List<MenuNode> ManipulateNodes(List<MenuNode> nodes, DotNetNuke.Entities.Portals.PortalSettings portalSettings)
         {
             _objCtrl = new NBrightDataController();
-            var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture();
+            var nodeTabList = "*";
+            foreach (var n in nodes)
+            {
+                nodeTabList += n.TabId + "*";
+            }
+            var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture() + "*" + nodeTabList; // use nodeTablist incase the DDRMenu has a selector.
             var rtnnodes = (List<MenuNode>)Utils.GetCache(cachekey);
             if (rtnnodes != null) return rtnnodes;
 
