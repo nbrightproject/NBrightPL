@@ -19,7 +19,7 @@ namespace NBrightPL.common
             var nodeTabList = "*";
             foreach (var n in nodes)
             {
-                nodeTabList += n.TabId + "*";
+                nodeTabList += n.TabId + "*" + n.Breadcrumb + "*";
             }
             var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture() + "*" + nodeTabList; // use nodeTablist incase the DDRMenu has a selector.
             var rtnnodes = (List<MenuNode>)Utils.GetCache(cachekey);
