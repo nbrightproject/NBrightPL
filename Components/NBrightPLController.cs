@@ -46,7 +46,7 @@ namespace NBrightPL.Components
                         if (tabInfo != null)
                         {
                             nbi.SetXmlProperty("genxml/exporttabid", tabInfo.TabID.ToString());
-                            nbi.GUIDKey = tabInfo.BreadCrumbs.ToString(); // use breadcrumd to relink on import.
+                            nbi.GUIDKey = tabInfo.TabPath; // use breadcrumd to relink on import.
                             xmlOut += nbi.ToXmlItem();
                         }			            
 			        }
@@ -60,7 +60,7 @@ namespace NBrightPL.Components
                         if (tabInfo != null)
                         {
                             nbi.SetXmlProperty("genxml/exporttabid", tabInfo.TabID.ToString());
-                            nbi.GUIDKey = tabInfo.BreadCrumbs.ToString(); // use breadcrumd to relink on import.
+                            nbi.GUIDKey = tabInfo.TabPath; // use breadcrumd to relink on import.
                             xmlOut += nbi.ToXmlItem();
                         }
                     }
@@ -115,18 +115,18 @@ namespace NBrightPL.Components
                 foreach (var t in tl)
                 {
                     var tabInfo = (TabInfo) t.Value;
-                    var strFilter = " and NB1.GUIDKey = '" + tabInfo.BreadCrumbs.ToString() + "' ";
+                    var strFilter = " and NB1.GUIDKey = '" + tabInfo.TabPath + "' ";
 
                     var l = objCtrl.GetList(portalId, moduleId, "PL", strFilter);
                     foreach (var i in l)
                     {
-                        i.GUIDKey = tabInfo.TabID.ToString();
+                        i.GUIDKey = tabInfo.TabID.ToString("");
                         objCtrl.Update(i);
                     }
                     var l2 = objCtrl.GetList(portalId, moduleId, "PLLANG", strFilter);
                     foreach (var i in l2)
                     {
-                        i.GUIDKey = tabInfo.TabID.ToString();
+                        i.GUIDKey = tabInfo.TabID.ToString("");
                         objCtrl.Update(i);
                     }
 

@@ -15,8 +15,6 @@
             $('.processing').show();
             $('input[[id*="_itemid_"]]').val($(this).val());
             nbxget('getformdata', '#selectparams', '#tablanguagefields');
-            nbxget('getbasedata', '#selectparams', '#tabbaselanguagefields');
-            $('input[[id*="_baselangtrans_"]]').val($('input[[id*="_baselang_"]]'));
 
             $('.tabupdate').show();
             $('#savetabdata').show();
@@ -31,7 +29,6 @@
             $('.processing').show();
             nbxget('saveformdata', '#tablanguagefields');
             $('input[[id*="_selectlang_"]]').val($(this).attr('lang'));
-            nbxget('getformdata', '#selectparams', '#tablanguagefields');
         });
 
         $('.selectbaselanguage').click(function () {
@@ -72,6 +69,16 @@
     $(document).on("nbxgetcompleted", nbxgetCompleted);
 
     function nbxgetCompleted(e) {
+        // trigger base load after tab select
+        if (e.cmd == 'getformdata') {
+            nbxget('getbasedata', '#selectparams', '#tabbaselanguagefields');
+            $('input[[id*="_baselangtrans_"]]').val($('input[[id*="_baselang_"]]'));
+        }
+        // trigger refresh after save
+        if (e.cmd == 'saveformdata') {
+            nbxget('getformdata', '#selectparams', '#tablanguagefields');
+        }
+        // deal with lock flag
         lockedit();
         $('input[[id*="_lock_"]]').change(function () {
             lockedit();
