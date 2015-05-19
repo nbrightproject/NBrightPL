@@ -70,14 +70,17 @@ namespace Nevoweb.DNN.NBrightPL
                     if (CheckRights()) strOut = SaveTabData(context);
                     break;
                 case "getsetting":
-                    strOut = GetSettings(context, "settings.html");
+                    if (CheckRights()) strOut = GetSettings(context, "settings.html");
                     break;
                 case "savesetting":
-                    strOut = SaveSettings(context);
+                    if (CheckRights()) strOut = SaveSettings(context);
                     break;
                 case "translate":
-                    TranslateForm(context);
-                    strOut = "reload";
+                    if (CheckRights())
+                    {
+                        TranslateForm(context);
+                        strOut = "reload";
+                    }
                     break;
             }
 
