@@ -54,10 +54,10 @@ namespace NBrightPL.common
                 var prov = providerAssembyClass.Split(Convert.ToChar(","));
                 try
                 {
-                    var handle = Activator.CreateInstance(prov[0], prov[1]);
+                    var handle = Activator.CreateInstance(prov[1], prov[0]);
                     return (INodeManipulator)handle.Unwrap();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Error in provider is invalid provider, so remove from providerlist.
                     return null;
