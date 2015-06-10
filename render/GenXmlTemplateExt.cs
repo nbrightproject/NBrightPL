@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
@@ -23,13 +24,13 @@ namespace NBrightPL.render
 
         private string _rootname = "genxml";
         private string _databindColumn = "XMLData";
-        private List<Boolean> visibleStatus;
+        private ConcurrentStack<Boolean> visibleStatus;
 
         #region "Override methods"
         // This section overrides the interface methods for the GenX provider.
         // It allows providers to create controls/Literals in the NBright template system.
 
-        public override bool CreateGenControl(string ctrltype, Control container, XmlNode xmlNod, string rootname = "genxml", string databindColum = "XMLData", string cultureCode = "", Dictionary<string, string> settings = null, List<Boolean> visibleStatusIn = null)
+        public override bool CreateGenControl(string ctrltype, Control container, XmlNode xmlNod, string rootname = "genxml", string databindColum = "XMLData", string cultureCode = "", Dictionary<string, string> settings = null, ConcurrentStack<Boolean> visibleStatusIn = null)
         {
             visibleStatus = visibleStatusIn;
 
