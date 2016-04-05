@@ -77,6 +77,10 @@ namespace NBrightPL.common
                     if (dataRecordLang != null)
                     {
                         n.Text = dataRecordLang.GetXmlProperty("genxml/textbox/pagename");
+                        n.Keywords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords");
+                        n.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
+                        n.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription");
+
                         if (n.Children.Count > 0) BuildNodes(n.Children, portalSettings);
                     }
                 }

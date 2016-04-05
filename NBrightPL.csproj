@@ -95,6 +95,12 @@
     <Content Include="Meta.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.xml" />
+    <Content Include="packages\RazorEngine.3.7.7\lib\net40\RazorEngine.dll" />
+    <Content Include="packages\RazorEngine.3.7.7\lib\net40\RazorEngine.xml" />
+    <Content Include="packages\RazorEngine.3.7.7\lib\net45\RazorEngine.dll" />
+    <Content Include="packages\RazorEngine.3.7.7\lib\net45\RazorEngine.xml" />
     <Content Include="Skins\NBrightPL\NBrightPL.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
@@ -111,9 +117,7 @@
     <Content Include="Themes\config\css\fullcalendar.min.css" />
     <Content Include="Themes\config\css\fullcalendar.print.css" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Installation\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\Support\NBrightCore\NBrightCore.csproj">
       <Project>{7b338113-6a9a-484d-a6c6-4d63fd5e58c6}</Project>
@@ -125,6 +129,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Docs\NBright_Page_Localization.docx" />
+    <None Include="Docs\NBright_Page_Localization.pdf" />
+    <None Include="Installation\NBrightPL.dnn" />
+    <None Include="packages\Microsoft.AspNet.Razor.3.0.0\Microsoft.AspNet.Razor.3.0.0.nupkg" />
+    <None Include="packages\RazorEngine.3.7.7\LICENSE.md" />
+    <None Include="packages\RazorEngine.3.7.7\RazorEngine.3.7.7.nupkg" />
     <None Include="XmlConnector.ashx" />
   </ItemGroup>
   <ItemGroup>
