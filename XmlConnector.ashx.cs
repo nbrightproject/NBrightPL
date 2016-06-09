@@ -125,10 +125,10 @@ namespace Nevoweb.DNN.NBrightPL
                     dataRecord = new NBrightInfo(true); // populate empty XML so we can update nodes.
                     dataRecord.GUIDKey = "NBrightPL";
                     dataRecord.PortalId = PortalSettings.Current.PortalId;
-                    dataRecord.ModuleId = -1;
                     dataRecord.TypeCode = "SETTINGS";
                     dataRecord.Lang = "";
                 }
+                dataRecord.ModuleId = -99; // always use -99, so we don't get picked up as data by NBrightMod.
 
                 var strIn = HttpUtility.UrlDecode(Utils.RequestParam(context, "inputxml"));
                 dataRecord.UpdateAjax(strIn);
