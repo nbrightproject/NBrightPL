@@ -46,7 +46,7 @@ namespace NBrightPL.Components
                         if (tabInfo != null)
                         {
                             nbi.SetXmlProperty("genxml/exporttabid", tabInfo.TabID.ToString());
-                            nbi.GUIDKey = tabInfo.TabPath; // use breadcrumd to relink on import.
+                            nbi.GUIDKey = EnCode(tabInfo.TabPath); // use breadcrumd to relink on import.
                             xmlOut += nbi.ToXmlItem();
                         }			            
 			        }
@@ -60,7 +60,7 @@ namespace NBrightPL.Components
                         if (tabInfo != null)
                         {
                             nbi.SetXmlProperty("genxml/exporttabid", tabInfo.TabID.ToString());
-                            nbi.GUIDKey = tabInfo.TabPath; // use breadcrumd to relink on import.
+                            nbi.GUIDKey = EnCode(tabInfo.TabPath); // use breadcrumd to relink on import.
                             xmlOut += nbi.ToXmlItem();
                         }
                     }
@@ -102,11 +102,26 @@ namespace NBrightPL.Components
                 var xmlNodList = xmlDoc.SelectNodes("root/item");
 			    if (xmlNodList != null)
 			    {
-			        foreach (XmlNode xmlNod1 in xmlNodList)
+                    // delete existing
+                    var l = objCtrl.GetList(portalId, -1, "PL");
+                    foreach (var nbi in l)
+                    {
+                        objCtrl.Delete(nbi.ItemID);
+                    }
+                    var l2 = objCtrl.GetList(portalId, -1, "PLLANG");
+                    foreach (var nbi in l2)
+                    {
+                        objCtrl.Delete(nbi.ItemID);
+                    }
+
+                    foreach (XmlNode xmlNod1 in xmlNodList)
 			        {
 			            var nbi = new NBrightInfo();
                         nbi.FromXmlItem(xmlNod1.OuterXml);
-			            objCtrl.Update(nbi);
+			            nbi.ItemID = -1;
+			            nbi.ParentItemId = -1;
+			            nbi.PortalId = portalId;
+                        objCtrl.Update(nbi);
 			        }
 			    }
 
@@ -115,19 +130,21 @@ namespace NBrightPL.Components
                 foreach (var t in tl)
                 {
                     var tabInfo = (TabInfo) t.Value;
-                    var strFilter = " and NB1.GUIDKey = '" + tabInfo.TabPath + "' ";
+                    var strFilter = " and NB1.GUIDKey = '" + EnCode(tabInfo.TabPath) + "' ";
 
                     var l = objCtrl.GetList(portalId, moduleId, "PL", strFilter);
                     foreach (var i in l)
                     {
                         i.GUIDKey = tabInfo.TabID.ToString("");
                         objCtrl.Update(i);
-                    }
-                    var l2 = objCtrl.GetList(portalId, moduleId, "PLLANG", strFilter);
-                    foreach (var i in l2)
-                    {
-                        i.GUIDKey = tabInfo.TabID.ToString("");
-                        objCtrl.Update(i);
+                        var l2 = objCtrl.GetList(portalId, moduleId, "PLLANG", strFilter);
+                        foreach (var i2 in l2)
+                        {
+                            i2.GUIDKey = tabInfo.TabID.ToString("");
+                            i2.ParentItemId = i.ItemID;
+                            objCtrl.Update(i2);
+                        }
+
                     }
 
                 }
@@ -136,11 +153,21 @@ namespace NBrightPL.Components
 
 		}
 
-		#endregion
+
+        private static string EnCode(string stringToEncode)
+        {
+            var strOut = "";
+            for (var i = 0; i < stringToEncode.Length; i++)
+            {
+                strOut += ((int)stringToEncode[i]) + ".";
+            }
+            return strOut;
+        }
+        #endregion
 
 
-		#endregion
+        #endregion
 
-	}
+    }
 
 }

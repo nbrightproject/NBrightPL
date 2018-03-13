@@ -11,6 +11,8 @@
     <AssemblyName>NBrightPL</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -106,10 +108,6 @@
     <Content Include="packages\RazorEngine.3.7.7\lib\net40\RazorEngine.xml" />
     <Content Include="packages\RazorEngine.3.7.7\lib\net45\RazorEngine.dll" />
     <Content Include="packages\RazorEngine.3.7.7\lib\net45\RazorEngine.xml" />
-    <Content Include="Skins\NBrightPL\NBrightPL.ascx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Skins\NBrightPL\NBrightPL.doctype.xml" />
     <Content Include="Themes\config\default\settings.html" />
     <Content Include="Themes\config\default\viewbodybase.html" />
     <Content Include="Themes\config\default\viewbody.html" />
@@ -122,11 +120,14 @@
     <Content Include="Themes\config\css\fullcalendar.min.css" />
     <Content Include="Themes\config\css\fullcalendar.print.css" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Installation\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Docs\NBright_Page_Localization.docx" />
     <None Include="Docs\NBright_Page_Localization.pdf" />
-    <None Include="Installation\NBrightPL.dnn" />
+    <None Include="NBrightPL.dnn" />
+    <None Include="packages.config" />
     <None Include="packages\Microsoft.AspNet.Razor.3.0.0\Microsoft.AspNet.Razor.3.0.0.nupkg" />
     <None Include="packages\RazorEngine.3.7.7\LICENSE.md" />
     <None Include="packages\RazorEngine.3.7.7\RazorEngine.3.7.7.nupkg" />
@@ -137,13 +138,24 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetFileName)" "..\..\..\..\..\bin\$(TargetFileName)"
-
- copy "$(AssemblyName).pdb" "..\..\..\..\..\bin\$(AssemblyName).pdb"
-
-
-</PostBuildEvent>
+    <Extension>zip</Extension>
+    <DNNFileName>NBrightPL</DNNFileName>
+    <PackageName>NBrightPL</PackageName>
   </PropertyGroup>
+  <Import Project="BuildScripts\ModulePackage.Targets" />
+  <Target Name="AfterBuild" DependsOnTargets="PackageAndDeploy">
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
