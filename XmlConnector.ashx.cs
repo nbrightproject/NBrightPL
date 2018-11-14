@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Web;
 using System.Xml;
 using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Entities.Users;
 using NBrightCore;
 using NBrightCore.common;
@@ -229,7 +230,51 @@ namespace Nevoweb.DNN.NBrightPL
                         var strIn = HttpUtility.UrlDecode(Utils.RequestParam(context, "inputxml"));
                         tabData.DataRecord.UpdateAjax(strIn);
                         tabData.DataLangRecord.UpdateAjax(strIn);
-                        tabData.Save();                        
+
+                        if (tabData.PageUrl.Trim(' ') == "")
+                        {
+                            tabData.PageUrl = GetPageUrl(tabData);
+                        }
+
+                        tabData.Save();
+
+                        // update tab url table.
+                        if (tabData.PageUrl != "")
+                        {
+                            var pageurl = tabData.PageUrl;
+                            if (!pageurl.StartsWith("/") ) pageurl = "/" + pageurl;
+
+                            var objTabs = new TabController();
+                            var tabUrlList = objTabs.GetTabUrls(tabData.TabId, PortalSettings.Current.PortalId);
+                            TabUrlInfo tabUrlInfo = null;
+                            foreach (var t in tabUrlList) 
+                            {
+                               // Get matching langauge.
+                               if (t.CultureCode == tabData.DataLangRecord.Lang && t.HttpStatus == "200")
+                                {
+                                    tabUrlInfo = t;
+                                }
+                            }
+                            if (tabUrlInfo == null)
+                            {
+                                tabUrlInfo = new TabUrlInfo();
+                                tabUrlInfo.SeqNum = tabUrlList.Count;
+                            }
+                            if (tabUrlInfo.Url != pageurl)
+                            {
+                                // create 301.
+                                tabUrlInfo.SeqNum = tabUrlList.Count + 1;
+                            }
+                            tabUrlInfo.TabId = tabData.TabId;
+                            tabUrlInfo.Url = pageurl;
+                            tabUrlInfo.QueryString = "";
+                            tabUrlInfo.HttpStatus = "200";
+                            tabUrlInfo.CultureCode = tabData.DataLangRecord.Lang;
+                            tabUrlInfo.IsSystem = true;
+                            tabUrlInfo.PortalAliasUsage = 0;
+                            objTabs.SaveTabUrl(tabUrlInfo, PortalSettings.Current.PortalId, true);
+
+                        }
                     }
                 }
 
@@ -242,6 +287,44 @@ namespace Nevoweb.DNN.NBrightPL
             }
 
         }
+
+        private string GetPageUrl(TabData tabData)
+        {
+            var objCtrl = new NBrightDataController();
+            var portalid = PortalSettings.Current.PortalId;
+            var objTabCtrl = new TabController();
+            var intTab = tabData.TabId;
+            var dnnTab = objTabCtrl.GetTab(intTab, portalid);
+            var rtnUrl = "";
+            var lp = 0;
+
+            while (intTab > 0 || lp > 20)
+            {
+                var dataRecord = objCtrl.GetByGuidKey(portalid, -1, "PL", intTab.ToString(""));
+                var pagename = "";
+                if (dataRecord != null)
+                {
+                    var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
+                    if (dataRecordLang != null)
+                    {
+                        pagename = dataRecordLang.GetXmlProperty("genxml/textbox/pagename");
+                    }
+                }
+                else
+                {
+                    // no PL data, so use normal tab data
+                    pagename = dnnTab.TabName;
+                }
+                rtnUrl = "/" + Utils.UrlFriendly(pagename) + rtnUrl;
+                intTab = dnnTab.ParentId;
+                dnnTab = objTabCtrl.GetTab(intTab, portalid);
+                lp += 1;
+            }
+
+            return rtnUrl;
+
+        }
+
 
         private void TranslateForm(HttpContext context)
         {

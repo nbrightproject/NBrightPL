@@ -101,6 +101,22 @@ namespace NBrightPL.common
             }
         }
 
+        public String PageUrl
+        {
+            get
+            {
+                if (Exists)
+                {
+                    return DataLangRecord.GetXmlProperty("genxml/textbox/pageurl");
+                }
+                return "";
+            }
+            set
+            {
+                DataLangRecord.SetXmlProperty("genxml/textbox/pageurl", value);
+            }
+        }
+
 
         public int TabId
         {
@@ -118,6 +134,9 @@ namespace NBrightPL.common
             objCtrl.Update(DataLangRecord);
             var menucachekey = "NBrightPL*" + PortalSettings.Current.PortalId + "*" + _lang;
             Utils.RemoveCache(menucachekey);
+            var cachekey = "NBrightPL*hreflang*" + PortalSettings.Current.PortalId + "*" + Utils.GetCurrentCulture() + "*" + DataRecord.GUIDKey;
+            Utils.RemoveCache(cachekey);
+
 
         }
 

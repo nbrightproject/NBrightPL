@@ -25,6 +25,10 @@ using NBrightDNN;
 using DotNetNuke.Entities.Portals;
 using NBrightPL.common;
 using Nevoweb.DNN.NBrightPL.Base;
+using System.Web.UI;
+using DotNetNuke.Services.Localization;
+using DotNetNuke.Data;
+using DotNetNuke.Common.Utilities;
 
 namespace Nevoweb.DNN.NBrightPL
 {
@@ -48,10 +52,55 @@ namespace Nevoweb.DNN.NBrightPL
                         var bPage = (DotNetNuke.Framework.CDefault) this.Page;
                         if (dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle") != "")
                             bPage.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
-                        if (dataRecordLang.GetXmlProperty("genxml/textbox/tagwords") != "")
                             bPage.KeyWords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords");
                         if (dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription") != "")
                             bPage.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription");
+
+
+                        var cachekey = "NBrightPL*hreflang*" + PortalSettings.Current.PortalId + "*" + Utils.GetCurrentCulture() + "*" + PortalSettings.ActiveTab.TabID; // use nodeTablist incase the DDRMenu has a selector.
+                        var canonicalurl = "";
+                        var hreflangtext = "";
+                        var hreflangobj = Utils.GetCache(cachekey);
+                        if (hreflangobj != null) hreflangtext = hreflangobj.ToString();
+                        if (hreflangtext == "" || true)
+                        {
+                            var objTabCtrl = new TabController();
+                            var dnnTab = objTabCtrl.GetTab(PortalSettings.ActiveTab.TabID, PortalSettings.Current.PortalId);
+                            var enabledlanguages = LocaleController.Instance.GetLocales(PortalSettings.Current.PortalId);
+                            var padic = CBO.FillDictionary<string, PortalAliasInfo>("HTTPAlias", DataProvider.Instance().GetPortalAliases());
+                            foreach (var l in enabledlanguages)
+                            {
+                                var portalalias = PortalSettings.Current.DefaultPortalAlias;
+                                foreach (var pa in padic)
+                                {
+                                    if (l.Key == pa.Value.CultureCode)
+                                    {
+                                        portalalias = pa.Key;
+                                    }
+                                }
+
+                                var pagename = "";
+                                var dataTabLang = objCtrl.GetDataLang(dataRecord.ItemID, l.Key);
+                                if (dataTabLang != null)
+                                {
+                                    pagename = dataTabLang.GetXmlProperty("genxml/textbox/pageurl");
+                                }
+
+                                var urldata = portalalias + pagename;
+                                hreflangtext += "<link rel='alternative' href='//" + urldata + "' hreflang='" + l.Key.ToLower() + "' />";
+                                if (Utils.GetCurrentCulture() == l.Key)
+                                {
+                                    canonicalurl = "//" + portalalias + pagename;
+                                }
+
+
+                            }
+                            Utils.SetCache(cachekey, hreflangtext);
+                        }
+
+                        bPage.Header.Controls.Add(new LiteralControl(hreflangtext));
+                        bPage.CanonicalLinkUrl = canonicalurl;
+
                     }
                 }
             }

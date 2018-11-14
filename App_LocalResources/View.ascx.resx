@@ -165,4 +165,7 @@
   <data name="lock.Text" xml:space="preserve">
     <value>Lock</value>
   </data>
+  <data name="url.Text" xml:space="preserve">
+    <value>URL (Clear and Save to rebuild page structure names)</value>
+  </data>
 </root>
