@@ -73,9 +73,12 @@ namespace Nevoweb.DNN.NBrightPL
                                 var portalalias = PortalSettings.Current.DefaultPortalAlias;
                                 foreach (var pa in padic)
                                 {
-                                    if (l.Key == pa.Value.CultureCode)
+                                    if (pa.Value.PortalID == PortalSettings.Current.PortalId)
                                     {
-                                        portalalias = pa.Key;
+                                        if (l.Key == pa.Value.CultureCode)
+                                        {
+                                            portalalias = pa.Key;
+                                        }
                                     }
                                 }
 
