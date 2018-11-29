@@ -7,6 +7,8 @@ using System.Xml;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Entities.Users;
+using DotNetNuke.Services.Exceptions;
+using DotNetNuke.Services.Localization;
 using NBrightCore;
 using NBrightCore.common;
 using NBrightCore.render;
@@ -82,6 +84,9 @@ namespace Nevoweb.DNN.NBrightPL
                         TranslateForm(context);
                         strOut = "reload";
                     }
+                    break;
+                case "validatetaburl":
+                    if (CheckRights()) strOut = ValidateUrls(context);
                     break;
             }
 
@@ -209,6 +214,34 @@ namespace Nevoweb.DNN.NBrightPL
             
         }
 
+        private String ValidateUrls(HttpContext context)
+        {
+            try
+            {
+                var enabledlanguages = LocaleController.Instance.GetLocales(PortalSettings.Current.PortalId);
+                foreach (var l in enabledlanguages)
+                {
+                    var ajaxInfo = GetAjaxFields(context);
+
+                    var objCtrl = new NBrightDataController();
+                    var list = objCtrl.GetList(PortalSettings.Current.PortalId, -1, "PL");
+                    foreach (var pl in list)
+                    {
+                        var tabData = new TabData(pl.GUIDKey, l.Value.Code);
+                        ValidateTabUrls(tabData);
+                    }
+                }
+
+                return "";
+
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+
+        }
+
         private String SaveTabData(HttpContext context)
         {
             try
@@ -238,43 +271,8 @@ namespace Nevoweb.DNN.NBrightPL
 
                         tabData.Save();
 
-                        // update tab url table.
-                        if (tabData.PageUrl != "")
-                        {
-                            var pageurl = tabData.PageUrl;
-                            if (!pageurl.StartsWith("/") ) pageurl = "/" + pageurl;
+                        SaveTabUrls(tabData);
 
-                            var objTabs = new TabController();
-                            var tabUrlList = objTabs.GetTabUrls(tabData.TabId, PortalSettings.Current.PortalId);
-                            TabUrlInfo tabUrlInfo = null;
-                            foreach (var t in tabUrlList) 
-                            {
-                               // Get matching langauge.
-                               if (t.CultureCode == tabData.DataLangRecord.Lang && t.HttpStatus == "200")
-                                {
-                                    tabUrlInfo = t;
-                                }
-                            }
-                            if (tabUrlInfo == null)
-                            {
-                                tabUrlInfo = new TabUrlInfo();
-                                tabUrlInfo.SeqNum = tabUrlList.Count;
-                            }
-                            if (tabUrlInfo.Url != pageurl)
-                            {
-                                // create 301.
-                                tabUrlInfo.SeqNum = tabUrlList.Count + 1;
-                            }
-                            tabUrlInfo.TabId = tabData.TabId;
-                            tabUrlInfo.Url = pageurl;
-                            tabUrlInfo.QueryString = "";
-                            tabUrlInfo.HttpStatus = "200";
-                            tabUrlInfo.CultureCode = tabData.DataLangRecord.Lang;
-                            tabUrlInfo.IsSystem = true;
-                            tabUrlInfo.PortalAliasUsage = 0;
-                            objTabs.SaveTabUrl(tabUrlInfo, PortalSettings.Current.PortalId, true);
-
-                        }
                     }
                 }
 
@@ -286,6 +284,181 @@ namespace Nevoweb.DNN.NBrightPL
                 return ex.ToString();
             }
 
+        }
+
+        private void SaveTabUrls(TabData tabData)
+        {
+            try
+            {
+                if (tabData != null)
+                {
+
+                    //save data
+                    if (tabData.Exists)
+                    {
+                        // update tab url table.
+                        if (tabData.PageUrl != "")
+                        {
+                            ValidateTabUrls(tabData);
+
+                            var pageurl = tabData.PageUrl;
+                            if (!pageurl.StartsWith("/")) pageurl = "/" + pageurl;
+
+                            var objTabs = new TabController();
+                            var tabUrlList = objTabs.GetTabUrls(tabData.TabId, PortalSettings.Current.PortalId);
+                            TabUrlInfo tabUrlInfo = null;
+                            foreach (var t in tabUrlList)
+                            {
+                                // Get matching langauge.
+                                if (t.CultureCode == tabData.DataLangRecord.Lang && t.HttpStatus == "200")
+                                {
+                                    tabUrlInfo = t;
+                                }
+                            }
+                            if (tabUrlInfo == null)
+                            {
+                                tabUrlInfo = new TabUrlInfo();
+                                tabUrlInfo.SeqNum = tabUrlList.Count + 1;
+                            }
+                            if (tabUrlInfo.Url != pageurl)
+                            {
+                                // create to 301.
+                                // Who decided that saving a taburl would trigger the creation of a 301????
+                                // This is complicated and confusing for people using it.  
+                                // If you add an existing 301 url, it causes a duplicate for 200 and 301.
+                                tabUrlInfo.SeqNum = tabUrlList.Count + 1;
+                            }
+
+                            tabUrlInfo.TabId = tabData.TabId;
+                            tabUrlInfo.HttpStatus = "200";
+                            tabUrlInfo.Url = pageurl;
+                            tabUrlInfo.QueryString = "";
+                            tabUrlInfo.CultureCode = tabData.DataLangRecord.Lang;
+                            tabUrlInfo.IsSystem = true;
+                            tabUrlInfo.PortalAliasUsage = 0;
+                            objTabs.SaveTabUrl(tabUrlInfo, PortalSettings.Current.PortalId, true);
+
+                            ValidateTabUrls(tabData);
+
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Exceptions.ProcessModuleLoadException("SaveTabUrls: Error on NBrightPL", null, ex);
+            }
+
+        }
+
+        private void ValidateTabUrls(TabData tabData)
+        {
+            try
+            {
+                if (tabData != null)
+                {
+
+                    //save data
+                    if (tabData.Exists)
+                    {
+                        // remove the 200 status with no language, DNN will use this as the default if we don't
+                        RemoveNonlang200TabUrls(tabData);
+
+                        // remove duplicate 301
+                        RemoveDuplicate301TabUrls(tabData);
+
+                        // resequence taburl records
+                        ResequanceTabUrls(tabData);
+
+                    }                }
+
+            }
+            catch (Exception ex)
+            {
+                Exceptions.ProcessModuleLoadException("ValidateTabUrls: Error on NBrightPL", null, ex);
+            }
+
+        }
+
+        private void RemoveNonlang200TabUrls(TabData tabData)
+        {
+            var objTabs = new TabController();
+            var tabUrlList = objTabs.GetTabUrls(tabData.TabId, PortalSettings.Current.PortalId);
+
+            // remove the 200 status with no language, DNN will use this as the default if we don't
+            TabUrlInfo deleteTabUrlInfo = null;
+            foreach (var t in tabUrlList)
+            {
+                // Get 200 without langauge.
+                if (t.CultureCode == "" && t.HttpStatus == "200")
+                {
+                    deleteTabUrlInfo = t;
+                }
+            }
+            if (deleteTabUrlInfo != null)
+            {
+                objTabs.DeleteTabUrl(deleteTabUrlInfo, PortalSettings.Current.PortalId, true);
+            }
+
+        }
+
+        private void RemoveDuplicate301TabUrls(TabData tabData)
+        {
+            // remove duplicate 301
+            var objTabs = new TabController();
+            var tabUrlList = objTabs.GetTabUrls(tabData.TabId, PortalSettings.Current.PortalId);
+            var deleteList = new List<TabUrlInfo>();
+            var pageurl = tabData.PageUrl;
+            if (!pageurl.StartsWith("/")) pageurl = "/" + pageurl;
+
+            foreach (var t in tabUrlList)
+            {
+                if (t.HttpStatus == "301")
+                {
+                    foreach (var t2 in tabUrlList)
+                    {
+                        if (t2.HttpStatus == "301")
+                        {
+                            if (t.Url == t2.Url && t.SeqNum != t2.SeqNum)
+                            {
+                                deleteList.Add(t2);
+                            }
+                        }
+                    }
+                }
+                if (t.HttpStatus == "200")
+                {
+                    foreach (var t2 in tabUrlList)
+                    {
+                        if (t2.HttpStatus == "301" && t.Url == t2.Url)
+                        {
+                            deleteList.Add(t2);
+                        }
+                    }
+                }
+                foreach (var d in deleteList)
+                {
+                   objTabs.DeleteTabUrl(d, PortalSettings.Current.PortalId, true);
+                }
+            }
+        }
+
+        private void ResequanceTabUrls(TabData tabData)
+        {
+            // resequence taburl records
+            var objTabs = new TabController();
+            var tabUrlList = objTabs.GetTabUrls(tabData.TabId, PortalSettings.Current.PortalId);
+            var seq = 1;
+            foreach (var t in tabUrlList)
+            {
+                if (t.SeqNum != seq)
+                {
+                    t.SeqNum = seq;
+                    objTabs.SaveTabUrl(t, PortalSettings.Current.PortalId, true);
+                }
+                seq += 1;
+            }
         }
 
         private string GetPageUrl(TabData tabData)
