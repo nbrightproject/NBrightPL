@@ -64,6 +64,7 @@ namespace Nevoweb.DNN.NBrightPL
                         if (hreflangobj != null) hreflangtext = hreflangobj.ToString();
                         if (hreflangtext == "" || true)
                         {
+                            hreflangtext = "";  // clear so we don't produce multiple hreflang with cache.
                             var objTabCtrl = new TabController();
                             var dnnTab = objTabCtrl.GetTab(PortalSettings.ActiveTab.TabID, PortalSettings.Current.PortalId);
                             var enabledlanguages = LocaleController.Instance.GetLocales(PortalSettings.Current.PortalId);
