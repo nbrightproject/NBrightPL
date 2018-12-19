@@ -72,6 +72,13 @@
       <DependentUpon>BreadCrumb.ascx.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\NBrightPLController.cs" />
+    <Compile Include="Lang.ascx.cs">
+      <DependentUpon>Lang.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Lang.ascx.designer.cs">
+      <DependentUpon>Lang.ascx.cs</DependentUpon>
+    </Compile>
     <Compile Include="Meta.ascx.cs">
       <DependentUpon>Meta.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -93,10 +100,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="App_LocalResources\Language.ascx.resx" />
+    <EmbeddedResource Include="App_LocalResources\View.ascx.fr-FR.resx" />
     <EmbeddedResource Include="App_LocalResources\View.ascx.resx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BreadCrumb.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Lang.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Meta.ascx">
