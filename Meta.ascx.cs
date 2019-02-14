@@ -42,7 +42,18 @@ namespace Nevoweb.DNN.NBrightPL
             {
                 var objCtrl = new NBrightDataController();
 
-                var dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "PL", PortalSettings.ActiveTab.TabID.ToString(""));
+                var eid = Utils.RequestQueryStringParam(Request, "eid");
+
+                NBrightInfo dataRecord;
+                if (Utils.IsNumeric(eid))
+                {
+                    dataRecord = objCtrl.Get(Convert.ToInt32(eid));
+                }
+                else
+                {
+                    dataRecord = objCtrl.GetByGuidKey(PortalSettings.Current.PortalId, -1, "PL", PortalSettings.ActiveTab.TabID.ToString(""));
+                }
+
                 if (dataRecord != null)
                 {
                     var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());

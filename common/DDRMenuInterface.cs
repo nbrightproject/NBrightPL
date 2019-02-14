@@ -16,21 +16,22 @@ namespace NBrightPL.common
         public List<MenuNode> ManipulateNodes(List<MenuNode> nodes, DotNetNuke.Entities.Portals.PortalSettings portalSettings)
         {
             _objCtrl = new NBrightDataController();
-            var nodeTabList = "*";
-            foreach (var n in nodes)
+            var settingRecord = _objCtrl.GetByGuidKey(portalSettings.PortalId, -1, "SETTINGS", "NBrightPL");
+            if (settingRecord != null)
             {
-                nodeTabList += n.Text + n.TabId + "*" + n.Breadcrumb + "*";
-            }
-            var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture() + "*" + nodeTabList; // use nodeTablist incase the DDRMenu has a selector.
-            var rtnnodes = (List<MenuNode>)Utils.GetCache(cachekey);
-            if (rtnnodes != null) return rtnnodes;
 
-            nodes = BuildNodes(nodes, portalSettings);
+                var nodeTabList = "*";
+                foreach (var n in nodes)
+                {
+                    nodeTabList += n.Text + n.TabId + "*" + n.Breadcrumb + "*";
+                }
+                var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture() + "*" + nodeTabList; // use nodeTablist incase the DDRMenu has a selector.
+                var rtnnodes = (List<MenuNode>)Utils.GetCache(cachekey);
+                if (rtnnodes != null && !settingRecord.GetXmlPropertyBool("genxml/checkbox/debugmode")) return rtnnodes;
 
-            var dataRecord = _objCtrl.GetByGuidKey(portalSettings.PortalId, -1, "SETTINGS", "NBrightPL");
-            if (dataRecord != null)
-            {
-                var menuproviders = dataRecord.GetXmlProperty("genxml/textbox/menuproviders");
+                nodes = BuildNodes(nodes, portalSettings);
+
+                var menuproviders = settingRecord.GetXmlProperty("genxml/textbox/menuproviders");
                 var provlist = menuproviders.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                 foreach (var p in provlist)
                 {
@@ -40,9 +41,9 @@ namespace NBrightPL.common
                         nodes = prov.ManipulateNodes(nodes, portalSettings);
                     }
                 }
+                Utils.SetCache(cachekey, nodes);
             }
 
-            Utils.SetCache(cachekey,nodes);
 
             return nodes;
         }
