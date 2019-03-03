@@ -40,6 +40,8 @@ namespace Nevoweb.DNN.NBrightPL
         {
             try
             {
+                NBrightInfo info = null;
+                var pagename = "";
                 var objCtrl = new NBrightDataController();
 
                 var eid = Utils.RequestQueryStringParam(Request, "eid");
@@ -56,16 +58,35 @@ namespace Nevoweb.DNN.NBrightPL
 
                 if (dataRecord != null)
                 {
+
                     var dataRecordLang = objCtrl.GetDataLang(dataRecord.ItemID, Utils.GetCurrentCulture());
                     if (dataRecordLang != null)
                     {
+                        DotNetNuke.Framework.CDefault tp = (DotNetNuke.Framework.CDefault)this.Page;
 
-                        var bPage = (DotNetNuke.Framework.CDefault) this.Page;
-                        if (dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle") != "")
-                            bPage.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
-                            bPage.KeyWords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords");
-                        if (dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription") != "")
-                            bPage.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription");
+                        if (Utils.IsNumeric(eid))
+                        {
+                            info = objCtrl.Get(Convert.ToInt32(eid), Utils.GetCurrentCulture());
+
+                            pagename = info.GetXmlProperty("genxml/lang/genxml/textbox/pagename");
+                            if (pagename == "") pagename = info.GetXmlProperty("genxml/textbox/pagename");
+                            if (pagename == "") pagename = info.GetXmlProperty("genxml/lang/genxml/textbox/title");
+                            if (pagename == "") pagename = info.GetXmlProperty("genxml/textbox/title");
+
+                            var pagetitle = info.GetXmlProperty("genxml/lang/genxml/textbox/pagetitle");
+                            if (pagetitle == "") pagetitle = info.GetXmlProperty("genxml/textbox/pagetitle");
+                            if (pagetitle == "") pagetitle = info.GetXmlProperty("genxml/lang/genxml/textbox/title");
+                            if (pagetitle == "") pagetitle = info.GetXmlProperty("genxml/textbox/title");
+
+                            var pagekeywords = info.GetXmlProperty("genxml/lang/genxml/textbox/pagekeywords");
+
+                            var pagedescription = info.GetXmlProperty("genxml/lang/genxml/textbox/pagedescription");
+
+                            if (pagetitle != "") tp.Title = pagetitle;
+                            if (pagedescription != "") tp.Description = pagedescription;
+                            if (pagekeywords != "") tp.KeyWords = pagekeywords;
+
+                        }
 
 
                         var cachekey = "NBrightPL*hreflang*" + PortalSettings.Current.PortalId + "*" + Utils.GetCurrentCulture() + "*" + PortalSettings.ActiveTab.TabID; // use nodeTablist incase the DDRMenu has a selector.
@@ -94,18 +115,25 @@ namespace Nevoweb.DNN.NBrightPL
                                     }
                                 }
 
-                                var pagename = "";
-                                var dataTabLang = objCtrl.GetDataLang(dataRecord.ItemID, l.Key);
-                                if (dataTabLang != null)
+                                var urldata = "";
+                                if (info != null)
                                 {
-                                    pagename = dataTabLang.GetXmlProperty("genxml/textbox/pageurl");
+                                    urldata = info.GetXmlProperty("genxml/lang/genxml/url");
+                                }
+                                else
+                                {
+                                    var dataTabLang = objCtrl.GetDataLang(dataRecord.ItemID, l.Key);
+                                    if (dataTabLang != null)
+                                    {
+                                        pagename = dataTabLang.GetXmlProperty("genxml/textbox/pageurl");
+                                        urldata = "//" + portalalias + pagename;
+                                    }
                                 }
 
-                                var urldata = portalalias + pagename;
-                                hreflangtext += "<link rel='alternative' href='//" + urldata + "' hreflang='" + l.Key.ToLower() + "' />";
+                                hreflangtext += "<link rel='alternative' href='" + urldata + "' hreflang='" + l.Key.ToLower() + "' />";
                                 if (Utils.GetCurrentCulture() == l.Key)
                                 {
-                                    canonicalurl = "//" + portalalias + pagename;
+                                    canonicalurl = urldata;
                                 }
 
 
@@ -113,8 +141,8 @@ namespace Nevoweb.DNN.NBrightPL
                             Utils.SetCache(cachekey, hreflangtext);
                         }
 
-                        bPage.Header.Controls.Add(new LiteralControl(hreflangtext));
-                        bPage.CanonicalLinkUrl = canonicalurl;
+                        tp.Header.Controls.Add(new LiteralControl(hreflangtext));
+                        tp.CanonicalLinkUrl = canonicalurl;
 
                     }
                 }
