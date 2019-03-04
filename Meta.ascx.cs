@@ -103,6 +103,7 @@ namespace Nevoweb.DNN.NBrightPL
                             var padic = CBO.FillDictionary<string, PortalAliasInfo>("HTTPAlias", DataProvider.Instance().GetPortalAliases());
                             foreach (var l in enabledlanguages)
                             {
+
                                 var portalalias = PortalSettings.Current.DefaultPortalAlias;
                                 foreach (var pa in padic)
                                 {
@@ -116,9 +117,14 @@ namespace Nevoweb.DNN.NBrightPL
                                 }
 
                                 var urldata = "";
-                                if (info != null)
+                                if (Utils.IsNumeric(eid))
                                 {
-                                    urldata = info.GetXmlProperty("genxml/lang/genxml/url");
+                                    var infourl = objCtrl.Get(Convert.ToInt32(eid), l.Key);
+                                    urldata = infourl.GetXmlProperty("genxml/lang/genxml/url");
+                                    if (urldata == "")
+                                    {
+                                        urldata = "//" + portalalias + pagename;
+                                    }
                                 }
                                 else
                                 {
