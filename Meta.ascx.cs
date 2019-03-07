@@ -87,6 +87,14 @@ namespace Nevoweb.DNN.NBrightPL
                             if (pagekeywords != "") tp.KeyWords = pagekeywords;
 
                         }
+                        else
+                        {
+                            if (dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle") != "")
+                                tp.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
+                            tp.KeyWords = dataRecordLang.GetXmlProperty("genxml/textbox/tagwords");
+                            if (dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription") != "")
+                                tp.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription");
+                        }
 
 
                         var cachekey = "NBrightPL*hreflang*" + PortalSettings.Current.PortalId + "*" + Utils.GetCurrentCulture() + "*" + PortalSettings.ActiveTab.TabID; // use nodeTablist incase the DDRMenu has a selector.
