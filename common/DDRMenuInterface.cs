@@ -17,20 +17,26 @@ namespace NBrightPL.common
         {
             _objCtrl = new NBrightDataController();
             var settingRecord = _objCtrl.GetByGuidKey(portalSettings.PortalId, -1, "SETTINGS", "NBrightPL");
+
+            var nodeTabList = "*";
+            foreach (var n in nodes)
+            {
+                nodeTabList += n.Text + n.TabId + "*" + n.Breadcrumb + "*";
+            }
+            var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture() + "*" + nodeTabList; // use nodeTablist incase the DDRMenu has a selector.
+            var rtnnodes = (List<MenuNode>)Utils.GetCache(cachekey);
+
+            var debugMode = false;
             if (settingRecord != null)
             {
+                debugMode = settingRecord.GetXmlPropertyBool("genxml/checkbox/debugmode");
+            }
+            if (rtnnodes != null && !debugMode) return rtnnodes;
 
-                var nodeTabList = "*";
-                foreach (var n in nodes)
-                {
-                    nodeTabList += n.Text + n.TabId + "*" + n.Breadcrumb + "*";
-                }
-                var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture() + "*" + nodeTabList; // use nodeTablist incase the DDRMenu has a selector.
-                var rtnnodes = (List<MenuNode>)Utils.GetCache(cachekey);
-                if (rtnnodes != null && !settingRecord.GetXmlPropertyBool("genxml/checkbox/debugmode")) return rtnnodes;
+            nodes = BuildNodes(nodes, portalSettings);
 
-                nodes = BuildNodes(nodes, portalSettings);
-
+            if (settingRecord != null)
+            {
                 var menuproviders = settingRecord.GetXmlProperty("genxml/textbox/menuproviders");
                 var provlist = menuproviders.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                 foreach (var p in provlist)
@@ -41,10 +47,9 @@ namespace NBrightPL.common
                         nodes = prov.ManipulateNodes(nodes, portalSettings);
                     }
                 }
-                Utils.SetCache(cachekey, nodes);
             }
 
-
+            Utils.SetCache(cachekey, nodes);
             return nodes;
         }
 
