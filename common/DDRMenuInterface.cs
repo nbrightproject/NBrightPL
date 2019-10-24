@@ -21,8 +21,9 @@ namespace NBrightPL.common
             var nodeTabList = "*";
             foreach (var n in nodes)
             {
-                nodeTabList += n.Text + n.TabId + "*" + n.Breadcrumb + "*";
+                nodeTabList += n.Text + n.TabId + "*" + n.Breadcrumb + "*" + n.Children.Count + "*";
             }
+
             var cachekey = "NBrightPL*" + portalSettings.PortalId + "*" + Utils.GetCurrentCulture() + "*" + nodeTabList; // use nodeTablist incase the DDRMenu has a selector.
             var rtnnodes = (List<MenuNode>)Utils.GetCache(cachekey);
 
@@ -31,7 +32,10 @@ namespace NBrightPL.common
             {
                 debugMode = settingRecord.GetXmlPropertyBool("genxml/checkbox/debugmode");
             }
-            if (rtnnodes != null && !debugMode) return rtnnodes;
+            if (rtnnodes != null && !debugMode)
+            {
+                return rtnnodes;
+            }
 
             nodes = BuildNodes(nodes, portalSettings);
 
@@ -49,7 +53,9 @@ namespace NBrightPL.common
                 }
             }
 
-            Utils.SetCache(cachekey, nodes);
+            // The nodes are passed by ref, so if they are manipulated after the nodes set has been passed back to DNN, the cache vallue will change. 
+            //Utils.SetCache(cachekey, nodes);
+
             return nodes;
         }
 
@@ -87,9 +93,9 @@ namespace NBrightPL.common
                         n.Title = dataRecordLang.GetXmlProperty("genxml/textbox/pagetitle");
                         n.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription");
 
-                        if (n.Children.Count > 0) BuildNodes(n.Children, portalSettings);
                     }
                 }
+                if (n.Children.Count > 0) BuildNodes(n.Children, portalSettings);
             }
             return nodes;
         }
