@@ -131,7 +131,7 @@ namespace Nevoweb.DNN.NBrightPL
                                     urldata = infourl.GetXmlProperty("genxml/lang/genxml/url");
                                     if (urldata == "")
                                     {
-                                        urldata = "//" + portalalias + pagename;
+                                        urldata = "https://" + portalalias + pagename;
                                     }
                                 }
                                 else
@@ -140,7 +140,7 @@ namespace Nevoweb.DNN.NBrightPL
                                     if (dataTabLang != null)
                                     {
                                         pagename = dataTabLang.GetXmlProperty("genxml/textbox/pageurl");
-                                        urldata = "//" + portalalias + pagename;
+                                        urldata = "https://" + portalalias + pagename;
                                     }
                                 }
 
@@ -156,7 +156,11 @@ namespace Nevoweb.DNN.NBrightPL
                         }
 
                         tp.Header.Controls.Add(new LiteralControl(hreflangtext));
-                        tp.CanonicalLinkUrl = canonicalurl;
+
+                        if (DataProvider.Instance().GetInstallVersion().Major < 9)
+                        {
+                            tp.CanonicalLinkUrl = canonicalurl;
+                        }
 
                     }
                 }
