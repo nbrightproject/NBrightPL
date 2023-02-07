@@ -156,11 +156,7 @@ namespace Nevoweb.DNN.NBrightPL
                         }
 
                         tp.Header.Controls.Add(new LiteralControl(hreflangtext));
-
-                        if (DataProvider.Instance().GetInstallVersion().Major < 9)
-                        {
-                            tp.CanonicalLinkUrl = canonicalurl;
-                        }
+                        tp.CanonicalLinkUrl = canonicalurl;
 
                     }
                 }
