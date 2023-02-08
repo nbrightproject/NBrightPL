@@ -91,7 +91,9 @@
   <ItemGroup>
     <EmbeddedResource Include="App_LocalResources\Language.ascx.resx" />
     <EmbeddedResource Include="App_LocalResources\View.ascx.fr-FR.resx" />
-    <EmbeddedResource Include="App_LocalResources\View.ascx.resx" />
+    <EmbeddedResource Include="App_LocalResources\View.ascx.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="BreadCrumb.ascx">

@@ -168,4 +168,7 @@
   <data name="url.Text" xml:space="preserve">
     <value>URL (Clear and Save to rebuild page structure names)</value>
   </data>
+  <data name="disablecanonical.Text" xml:space="preserve">
+    <value>Disable 'canonical' and 'alternative' meta data</value>
+  </data>
 </root>

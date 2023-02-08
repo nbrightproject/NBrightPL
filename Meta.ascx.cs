@@ -96,67 +96,70 @@ namespace Nevoweb.DNN.NBrightPL
                                 tp.Description = dataRecordLang.GetXmlProperty("genxml/textbox/pagedescription");
                         }
 
-
-                        var cachekey = "NBrightPL*hreflang*" + PortalSettings.Current.PortalId + "*" + Utils.GetCurrentCulture() + "*" + PortalSettings.ActiveTab.TabID; // use nodeTablist incase the DDRMenu has a selector.
-                        var canonicalurl = "";
-                        var hreflangtext = "";
-                        var hreflangobj = Utils.GetCache(cachekey);
-                        if (hreflangobj != null) hreflangtext = hreflangobj.ToString();
-                        if (hreflangtext == "" || true)
+                        if (!dataRecordLang.GetXmlPropertyBool("genxml/checkbox/disablecanonical"))
                         {
-                            hreflangtext = "";  // clear so we don't produce multiple hreflang with cache.
-                            var objTabCtrl = new TabController();
-                            var dnnTab = objTabCtrl.GetTab(PortalSettings.ActiveTab.TabID, PortalSettings.Current.PortalId);
-                            var enabledlanguages = LocaleController.Instance.GetLocales(PortalSettings.Current.PortalId);
-                            var padic = CBO.FillDictionary<string, PortalAliasInfo>("HTTPAlias", DataProvider.Instance().GetPortalAliases());
-                            foreach (var l in enabledlanguages)
+                            var cachekey = "NBrightPL*hreflang*" + PortalSettings.Current.PortalId + "*" + Utils.GetCurrentCulture() + "*" + PortalSettings.ActiveTab.TabID; // use nodeTablist incase the DDRMenu has a selector.
+                            var canonicalurl = "";
+                            var hreflangtext = "";
+                            var hreflangobj = Utils.GetCache(cachekey);
+                            if (hreflangobj != null) hreflangtext = hreflangobj.ToString();
+                            if (hreflangtext == "" || true)
                             {
-
-                                var portalalias = PortalSettings.Current.DefaultPortalAlias;
-                                foreach (var pa in padic)
+                                hreflangtext = "";  // clear so we don't produce multiple hreflang with cache.
+                                var objTabCtrl = new TabController();
+                                var dnnTab = objTabCtrl.GetTab(PortalSettings.ActiveTab.TabID, PortalSettings.Current.PortalId);
+                                var enabledlanguages = LocaleController.Instance.GetLocales(PortalSettings.Current.PortalId);
+                                var padic = CBO.FillDictionary<string, PortalAliasInfo>("HTTPAlias", DataProvider.Instance().GetPortalAliases());
+                                foreach (var l in enabledlanguages)
                                 {
-                                    if (pa.Value.PortalID == PortalSettings.Current.PortalId)
+
+                                    var portalalias = PortalSettings.Current.DefaultPortalAlias;
+                                    foreach (var pa in padic)
                                     {
-                                        if (l.Key == pa.Value.CultureCode)
+                                        if (pa.Value.PortalID == PortalSettings.Current.PortalId)
                                         {
-                                            portalalias = pa.Key;
+                                            if (l.Key == pa.Value.CultureCode)
+                                            {
+                                                portalalias = pa.Key;
+                                            }
                                         }
                                     }
-                                }
 
-                                var urldata = "";
-                                if (Utils.IsNumeric(eid))
-                                {
-                                    var infourl = objCtrl.Get(Convert.ToInt32(eid), l.Key);
-                                    urldata = infourl.GetXmlProperty("genxml/lang/genxml/url");
-                                    if (urldata == "")
+                                    var urldata = "";
+                                    if (Utils.IsNumeric(eid))
                                     {
-                                        urldata = "https://" + portalalias + pagename;
+                                        var infourl = objCtrl.Get(Convert.ToInt32(eid), l.Key);
+                                        urldata = infourl.GetXmlProperty("genxml/lang/genxml/url");
+                                        if (urldata == "")
+                                        {
+                                            urldata = "https://" + portalalias + pagename;
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    var dataTabLang = objCtrl.GetDataLang(dataRecord.ItemID, l.Key);
-                                    if (dataTabLang != null)
+                                    else
                                     {
-                                        pagename = dataTabLang.GetXmlProperty("genxml/textbox/pageurl");
-                                        urldata = "https://" + portalalias + pagename;
+                                        var dataTabLang = objCtrl.GetDataLang(dataRecord.ItemID, l.Key);
+                                        if (dataTabLang != null)
+                                        {
+                                            pagename = dataTabLang.GetXmlProperty("genxml/textbox/pageurl");
+                                            urldata = "https://" + portalalias + pagename;
+                                        }
                                     }
+
+                                    hreflangtext += "<link rel='alternative' href='" + urldata + "' hreflang='" + l.Key.ToLower() + "' />";
+                                    if (Utils.GetCurrentCulture() == l.Key)
+                                    {
+                                        canonicalurl = urldata;
+                                    }
+
+
                                 }
-
-                                hreflangtext += "<link rel='alternative' href='" + urldata + "' hreflang='" + l.Key.ToLower() + "' />";
-                                if (Utils.GetCurrentCulture() == l.Key)
-                                {
-                                    canonicalurl = urldata;
-                                }
-
-
+                                Utils.SetCache(cachekey, hreflangtext);
                             }
-                            Utils.SetCache(cachekey, hreflangtext);
-                        }
 
-                        tp.Header.Controls.Add(new LiteralControl(hreflangtext));
-                        tp.CanonicalLinkUrl = canonicalurl;
+                            tp.Header.Controls.Add(new LiteralControl(hreflangtext));
+                            tp.CanonicalLinkUrl = canonicalurl;
+
+                        }
 
                     }
                 }
