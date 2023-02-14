@@ -145,7 +145,7 @@ namespace Nevoweb.DNN.NBrightPL
                                         }
                                     }
 
-                                    hreflangtext += "<link rel='alternative' href='" + urldata + "' hreflang='" + l.Key.ToLower() + "' />";
+                                    hreflangtext += "<link rel='alternate' href='" + urldata + "' hreflang='" + l.Key.ToLower() + "' />";
                                     if (Utils.GetCurrentCulture() == l.Key)
                                     {
                                         canonicalurl = urldata;
