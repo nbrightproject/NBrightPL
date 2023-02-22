@@ -64,9 +64,15 @@
         $('a[[data-toggle="tab"]]').click(function (e) {
             if ($(this).attr('href') == '#settingsdiv') {
                 nbxget('getsetting', '#selectparams', '#settings');
+                $('#settingsdiv').show();
+                $('#tabupdate').hide();
+            }
+            else {
+                $('#settingsdiv').hide();
+                $('#tabupdate').show();
             }
         });
-        $('#tablist a').first().tab('show');
+        $('#tabupdate').show();
 
     });
 
@@ -166,8 +172,8 @@
 
     <div id="myTabContent" class="tab-content">
 
-        <div id="tabupdate" class="tab-pane fade in active">
-            <div class="container-fluid">
+        <div id="tabupdate" class="" style="">
+            <div class="">
                 <div>
                     [<tag type="valueof" resourcekey="View.selectpage" />] : [<tag id="ddlTabId" type="dropdownlist" cssclass="tabclass" datatabs="blank" />]
                     <div class="buttons">
@@ -192,8 +198,8 @@
             </div>
         </div>
 
-        <div id="settingsdiv" class="tab-pane fade">
-            <div class="container-fluid">
+        <div id="settingsdiv" class=""  style="display:none;">
+            <div class="">
 
                 <div class="row">
                     <div class="col-md-12">
