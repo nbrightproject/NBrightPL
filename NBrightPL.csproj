@@ -33,8 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DotNetNuke">
-      <HintPath>..\NBrightBuy\_external\DotNetNuke.dll</HintPath>
+    <Reference Include="DotNetNuke, Version=9.7.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>_external\DotNetNuke.dll</HintPath>
     </Reference>
     <Reference Include="DotNetNuke.Web.DDRMenu">
       <HintPath>..\NBrightBuy\_external\DotNetNuke.Web.DDRMenu.dll</HintPath>
